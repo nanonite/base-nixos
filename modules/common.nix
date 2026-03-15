@@ -1,11 +1,12 @@
 { inputs, pkgs, lib, config, ... }:
 
+# ── common.nix — shared base for ALL hosts ────────────────────────────────────
+#
+# What lives here: bootloader, Nix settings, btrfs, audio, portals, users.
+# What does NOT live here: gaming, remote-desktop, dev-tooling, nvidia.
+# Those are imported explicitly per-host so embedded hosts stay minimal.
+
 {
-  imports = [
-    ./gaming.nix
-    ./dev-tooling.nix
-    ./remote-desktop.nix
-  ];
 
   # ── Nix / Flakes ──────────────────────────────────────────────────────────
 
@@ -134,6 +135,12 @@
 
   boot.kernelModules     = [ "kvm-intel" "vhost_vsock" ];
   boot.extraModulePackages = [];
+
+  # QEMU binfmt — allows building aarch64-linux derivations on x86_64 hosts.
+  # Required for cross-compiling NixOS closures for the Raspberry Pi:
+  #   nixos-rebuild switch --flake .#rpi4 --target-host pi@raspberrypi.local
+  # Only meaningful on x86_64 hosts; harmless on aarch64.
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # ── Audio (Pipewire) ──────────────────────────────────────────────────────
 

@@ -1,0 +1,61 @@
+# exomonad.toml — orchestration router config
+#
+# exomonad reads this file to know:
+#   - which agents are available and what model/harness they use
+#   - how to route tasks in normal mode (one agent) vs benchmark mode (all agents)
+#   - where to write task results
+#
+# See: github:tidepool-heavy-industries/exomonad for full config schema.
+# Adjust field names if the actual schema differs from this plan-based draft.
+
+[planner]
+model   = "claude-opus-4-6"    # planning model — Opus does decomposition and routing
+harness = "claude-code"        # planner runs as a Claude Code agent
+
+# JIRA integration — planner creates/updates issues as it works
+[planner.jira]
+config = "./jira-config.yaml"  # go-jira config
+project = "MYPROJ"             # replace with your actual JIRA project key
+
+# ── Agent roster ──────────────────────────────────────────────────────────────
+
+[[agents]]
+id      = "agent-gemini"
+harness = "gemini-cli"
+jcard   = "../agent-sandbox/jcard-gemini.toml"
+model   = "gemini-2.0-flash"   # or gemini-2.5-pro for harder tasks
+
+[[agents]]
+id      = "agent-claude"
+harness = "claude-code"
+jcard   = "../agent-sandbox/jcard-claude.toml"
+model   = "claude-sonnet-4-6"  # executor model (Opus is planner-only)
+
+[[agents]]
+id      = "agent-opencode"
+harness = "opencode"
+jcard   = "../agent-sandbox/jcard-opencode.toml"
+model   = "gpt-4o"             # or configure opencode's preferred model
+
+# ── Routing rules ─────────────────────────────────────────────────────────────
+
+[routing]
+# Normal mode: planner picks the best agent for each task based on task tags.
+# Benchmark mode (EXOMONAD_BENCHMARK=1): all agents receive the same task.
+mode = "normal"   # overridden to "benchmark" when EXOMONAD_BENCHMARK=1
+
+# Agent selection hints for normal mode (tags → preferred agent)
+[routing.hints]
+rust      = "agent-claude"    # Claude Code is strongest on Rust
+python    = "agent-gemini"    # Gemini on Python/data tasks
+analysis  = "agent-gemini"    # Gemini on analysis/notebook tasks
+default   = "agent-claude"    # fallback
+
+# ── Benchmark output ──────────────────────────────────────────────────────────
+
+[benchmark]
+results_dir = "./benchmark-results"   # relative to workspace root
+# Each agent writes to: benchmark-results/<agent-id>/
+#   output/          — code produced
+#   metrics.json     — wall-clock time, lines changed, test pass rate
+#   test-results.xml — cargo nextest / pytest output

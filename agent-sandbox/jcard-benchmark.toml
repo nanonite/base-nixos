@@ -1,0 +1,39 @@
+# jcard-benchmark.toml — benchmark run: spawns N agents for the same task
+#
+# Dispatches the same task to Gemini, Claude Code, and opencode in parallel.
+# Results are written to ./benchmark-results/<agent-id>/ for Marimo comparison.
+#
+# Usage:
+#   BENCHMARK_MODE=1 TASK_ID=MYPROJ-42 mb up --config agent-sandbox/jcard-benchmark.toml
+#
+# exomonad reads BENCHMARK_MODE=1 and routes to all agents instead of one.
+
+mixtape = "agent-workbench:latest"
+
+[resources]
+cpus   = 4       # more headroom — three agents run in parallel
+memory = "8GiB"
+disk   = "20GiB"
+
+[network]
+mode = "nat"
+
+[[shared]]
+host  = "./"
+guest = "/home/agent/workspace"
+
+[[shared]]
+host  = "./benchmark-results"
+guest = "/benchmark-results"
+
+[secrets]
+ANTHROPIC_API_KEY = "${ANTHROPIC_API_KEY}"
+GEMINI_API_KEY    = "${GEMINI_API_KEY}"
+OPENAI_API_KEY    = "${OPENAI_API_KEY}"
+BENCHMARK_MODE    = "1"
+TASK_ID           = "${TASK_ID}"    # links results to JIRA issue
+
+[agent]
+harness = "custom"                  # exomonad handles multi-agent dispatch
+prompt  = ""
+workdir = "/home/agent/workspace"

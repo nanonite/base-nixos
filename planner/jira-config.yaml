@@ -1,0 +1,52 @@
+# go-jira config — declares JIRA project structure and field mapping
+# Docs: https://github.com/go-jira/jira
+#
+# Store credentials in ~/.jira.d/config.yml or use environment variables:
+#   JIRA_API_TOKEN — your Atlassian API token (generate at id.atlassian.com)
+#   JIRA_LOGIN     — your Atlassian account email
+
+endpoint: https://yourorg.atlassian.net   # replace with your org URL
+login: your-email@example.com             # replace with your email
+project: MYPROJ                           # replace with your project key
+
+# Issue type mapping (adjust to match your JIRA instance's issue type names)
+issue_types:
+  epic:    Epic
+  story:   Story
+  subtask: Sub-task
+  bug:     Bug
+  task:    Task
+
+# Custom fields — get field IDs from:
+#   jira fields | jq '.[] | select(.name | test("agent|worktree|benchmark"))'
+# These IDs vary per JIRA instance — update after inspection.
+custom_fields:
+  agent_id:    customfield_10001   # which agent is assigned (agent-gemini, agent-claude, etc.)
+  benchmark:   customfield_10002   # benchmark run ID
+  worktree:    customfield_10003   # git worktree branch name
+
+# Labels applied to all AI-planned issues (for filtering in dashboards)
+default_labels:
+  - ai-planned
+  - agent-framework
+
+# Templates for issue creation (used by the planner's jira calls)
+# jira issue create --template epic creates an Epic with this structure
+templates:
+  epic: |
+    summary: "Feature: {{ .Summary }}"
+    issuetype:
+      name: Epic
+    labels: [ai-planned, agent-framework]
+    description: |
+      Planned by Claude Opus. Decomposed into Stories per agent task.
+
+  story: |
+    summary: "{{ .Summary }}"
+    issuetype:
+      name: Story
+    labels: [ai-planned]
+    assignee:
+      name: "{{ .AgentID }}"
+    customfield_10001: "{{ .AgentID }}"
+    customfield_10003: "{{ .Worktree }}"

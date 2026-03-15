@@ -1,0 +1,25 @@
+# jcard-gemini.toml — Gemini CLI agent sandbox config
+# Launch: mb up --config agent-sandbox/jcard-gemini.toml
+
+mixtape = "agent-workbench:latest"
+
+[resources]
+cpus   = 2
+memory = "4GiB"
+disk   = "10GiB"
+
+[network]
+mode = "nat"
+
+[[shared]]
+host  = "./"
+guest = "/home/agent/workspace"
+
+[secrets]
+GEMINI_API_KEY = "${GEMINI_API_KEY}"
+TASK_ID        = "${TASK_ID}"    # JIRA issue key, e.g. MYPROJ-42
+
+[agent]
+harness = "gemini-cli"
+prompt  = ""                     # populated by exomonad at launch from AGENTS.md
+workdir = "/home/agent/workspace"

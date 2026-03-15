@@ -258,15 +258,39 @@
     historyControl = [ "ignoredups" "ignorespace" ];
     shellAliases = {
       # NixOS rebuild shortcuts
-      update  = "sudo nixos-rebuild switch --flake /etc/nixos#framework";
-      upgrade = "sudo nix flake update /etc/nixos && sudo nixos-rebuild switch --flake /etc/nixos#framework";
-      rollback = "sudo nixos-rebuild switch --rollback";
+      update     = "sudo nixos-rebuild switch --flake /etc/nixos#framework";
+      upgrade    = "sudo nix flake update /etc/nixos && sudo nixos-rebuild switch --flake /etc/nixos#framework";
+      rollback   = "sudo nixos-rebuild switch --rollback";
       generations = "nixos-rebuild list-generations";
+
       # btrfs snapshot before a risky operation
-      snap    = "sudo btrbk snapshot";
-      # mb (masterblaster) is in systemPackages but alias for clarity
-      ls      = "ls --color=auto";
-      ll      = "ls -lah --color=auto";
+      snap       = "sudo btrbk snapshot";
+
+      # ls improvements
+      ls         = "ls --color=auto";
+      ll         = "ls -lah --color=auto";
+
+      # ── Agent orchestration ──────────────────────────────────────────────
+      # Normal mode — one agent per task
+      agent-gemini  = "mb up --config /etc/nixos/agent-sandbox/jcard-gemini.toml";
+      agent-claude  = "mb up --config /etc/nixos/agent-sandbox/jcard-claude.toml";
+      agent-open    = "mb up --config /etc/nixos/agent-sandbox/jcard-opencode.toml";
+
+      # Benchmark mode — all agents in parallel for the same task
+      benchmark     = "BENCHMARK_MODE=1 mb up --config /etc/nixos/agent-sandbox/jcard-benchmark.toml";
+
+      # Marimo dashboard
+      dashboard     = "marimo run /etc/nixos/planner/dashboard.py";
+      dashboard-edit = "marimo edit /etc/nixos/planner/dashboard.py";
+
+      # JIRA shortcuts (go-jira)
+      jl            = "jira issue list --project \${JIRA_PROJECT:-MYPROJ} --status 'In Progress'";
+      jc            = "jira issue create --project \${JIRA_PROJECT:-MYPROJ}";
+      jt            = "jira issue transition";
+
+      # Mixtape build + publish
+      mixtape-build = "nix build /etc/nixos/mixtape/.#mixtape";
+      mixtape-pub   = "mb mixtape publish agent-workbench:latest ./result";
     };
     initExtra = ''
       # Auto-start tmux on terminal open (if not already inside tmux)
@@ -275,6 +299,43 @@
       fi
     '';
   };
+
+  # ── go-jira config ────────────────────────────────────────────────────────
+  # go-jira reads ~/.jira.d/config.yml for per-user overrides.
+  # Project-level config lives in planner/jira-config.yaml.
+  # Set JIRA_API_TOKEN and JIRA_PROJECT in your shell environment (not committed).
+
+  xdg.configFile."jira/config.yml".text = ''
+    # go-jira user config — overrides planner/jira-config.yaml
+    # Set your actual values below or via environment variables.
+    endpoint: https://yourorg.atlassian.net
+    login: your-email@example.com
+    project: MYPROJ
+    authentication-method: api-token
+  '';
+
+  # ── chainlink config — MCP server composition ──────────────────────────────
+  # chainlink composes multiple MCP servers into a single tool surface for agents.
+  # Agents reference this config to get: tilth, tmux-mcp, and any other MCP tools.
+  # See: github:dollspace-gay/chainlink for full config schema.
+
+  xdg.configFile."chainlink/config.toml".text = ''
+    # chainlink — unified MCP server composition for agent tool surface
+
+    # tilth — code intelligence: symbol search, file reading, AST-aware navigation
+    [[server]]
+    name    = "tilth"
+    command = ["tilth", "serve"]
+    # tilth reads the project directory automatically from the working dir
+
+    # tmux-mcp — exposes tmux as an MCP server
+    # Agents can open panes, run commands, read output via structured MCP calls
+    # [[server]]
+    # name    = "tmux"
+    # command = ["tmux-mcp"]   # uncomment once tmux-mcp is installed
+
+    # Future MCP servers: add [[server]] blocks here as they become available
+  '';
 
   # ── wayvnc config ─────────────────────────────────────────────────────────
   # Declares the wayvnc config file at ~/.config/wayvnc/config

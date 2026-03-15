@@ -1,0 +1,36 @@
+# .gitconfig-worktrees — worktree-friendly git config
+#
+# Include this from your project's .git/config or ~/.gitconfig:
+#   [include]
+#       path = .gitconfig-worktrees
+#
+# Or symlink it: ln -s .gitconfig-worktrees .git/config-worktrees
+
+[core]
+    # Each worktree gets its own hooks dir (prevents hook cross-contamination)
+    hooksPath = .git/hooks
+
+[worktree]
+    # Shared stash across worktrees (useful for planner to pass context)
+    # gitDir = .git
+
+[push]
+    # Refuse to push if the tracking branch has diverged — prevents accidental overwrites
+    default = simple
+
+[merge]
+    # Three-way merge markers — easier to resolve conflicts between agent branches
+    conflictStyle = diff3
+
+[diff]
+    # Structural/semantic diffs where possible
+    algorithm = histogram
+
+[rebase]
+    # Auto-stash before rebase (safe for worktree switching)
+    autoStash = true
+
+# ── lolearn stub ──────────────────────────────────────────────────────────────
+# Uncomment when lolearn is ready to analyze commits:
+# [hooks]
+#   post-commit = lolearn analyze HEAD >> .lolearn/$(date +%Y-%m).md

@@ -1,0 +1,26 @@
+# jcard-opencode.toml — opencode agent sandbox config
+# Launch: mb up --config agent-sandbox/jcard-opencode.toml
+
+mixtape = "agent-workbench:latest"
+
+[resources]
+cpus   = 2
+memory = "4GiB"
+disk   = "10GiB"
+
+[network]
+mode = "nat"
+
+[[shared]]
+host  = "./"
+guest = "/home/agent/workspace"
+
+[secrets]
+OPENAI_API_KEY    = "${OPENAI_API_KEY}"    # opencode supports multiple providers
+ANTHROPIC_API_KEY = "${ANTHROPIC_API_KEY}"
+TASK_ID           = "${TASK_ID}"    # JIRA issue key, e.g. MYPROJ-42
+
+[agent]
+harness = "opencode"
+prompt  = ""                       # populated by exomonad at launch from AGENTS.md
+workdir = "/home/agent/workspace"
