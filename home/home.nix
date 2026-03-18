@@ -173,82 +173,9 @@
   };
 
   # ── VS Code ───────────────────────────────────────────────────────────────
-  # Using Home Manager's vscode module so extensions and settings are declared
-  # in your flake — no manual marketplace clicking after a fresh install.
-
-  programs.vscode = {
-    enable  = true;
-    package = pkgs.vscode; # swap for pkgs.vscodium for the fully open-source build
-
-    # Extensions — sourced from nixpkgs (vscode-extensions.*) or the Open VSX
-    # registry via nix-vscode-extensions if you need something not in nixpkgs.
-    extensions = with pkgs.vscode-extensions; [
-      # Nix
-      jnoortheen.nix-ide          # nix language support, syntax, formatting
-
-      # General dev
-      eamodio.gitlens             # inline git blame, history explorer
-      esbenp.prettier-vscode      # opinionated formatter (JS/TS/JSON/YAML/MD)
-      usernamehw.errorlens        # show errors/warnings inline in the editor
-      gruntfuggly.todo-tree       # highlights TODO/FIXME comments
-      mkhl.direnv                 # auto-load .envrc / nix develop shells in terminal
-
-      # Go (useful for working on masterblaster which is a Go project)
-      golang.go
-
-      # Rust
-      rust-lang.rust-analyzer  # uses the rust-analyzer binary from dev-tooling.nix
-
-      # Themes
-      catppuccin.catppuccin-vsc           # Catppuccin Mocha — matches niri/tmux colors above
-      catppuccin.catppuccin-vsc-icons
-    ];
-
-    userSettings = {
-      # Editor
-      "editor.fontFamily"              = "'JetBrainsMono Nerd Font', monospace";
-      "editor.fontSize"                = 14;
-      "editor.fontLigatures"           = true;
-      "editor.lineHeight"              = 1.6;
-      "editor.formatOnSave"            = true;
-      "editor.defaultFormatter"        = "esbenp.prettier-vscode";
-      "editor.minimap.enabled"         = false;
-      "editor.renderWhitespace"        = "boundary";
-      "editor.cursorBlinking"          = "smooth";
-      "editor.smoothScrolling"         = true;
-
-      # Workbench
-      "workbench.colorTheme"           = "Catppuccin Mocha";
-      "workbench.iconTheme"            = "catppuccin-mocha";
-      "workbench.startupEditor"        = "none";
-      "workbench.tree.indent"          = 16;
-
-      # Terminal — use tmux inside VS Code's integrated terminal
-      "terminal.integrated.fontFamily" = "'JetBrainsMono Nerd Font'";
-      "terminal.integrated.fontSize"   = 13;
-      "terminal.integrated.shell.linux" = "${pkgs.bash}/bin/bash";
-
-      # Window
-      "window.titleBarStyle"           = "custom"; # required for Wayland
-      "window.menuBarVisibility"       = "toggle";
-
-      # Files
-      "files.autoSave"                 = "onFocusChange";
-      "files.trimTrailingWhitespace"   = true;
-      "files.insertFinalNewline"       = true;
-
-      # Git
-      "git.autofetch"                  = true;
-      "git.confirmSync"                = false;
-
-      # Nix IDE
-      "nix.enableLanguageServer"       = true;
-      "nix.serverPath"                 = "nixd"; # set below in packages
-
-      # Telemetry off
-      "telemetry.telemetryLevel"       = "off";
-    };
-  };
+  # Disabled for initial install — vscode requires allowUnfree.
+  # Re-enable after adding nixpkgs.config.allowUnfree = true to your config.
+  # programs.vscode = { ... };
 
   # ── Shell — bash with useful defaults ────────────────────────────────────
   # Swap for programs.zsh or programs.fish if you prefer
