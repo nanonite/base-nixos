@@ -10,19 +10,13 @@
   };
 
   # ── Steam ──────────────────────────────────────────────────────────────────
-
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall      = true;
-    dedicatedServer.openFirewall = false;
-
-    # Proton-GE: community fork of Proton with extra patches, better codec
-    # support, and faster fixes for newly released games than stock Proton.
-    # Select it per-game in Steam → Properties → Compatibility → Force use of...
-    extraCompatPackages = with pkgs; [
-      proton-ge-bin
-    ];
-  };
+  # Unfree — install manually after adding nixpkgs.config.allowUnfree = true
+  # programs.steam = {
+  #   enable = true;
+  #   remotePlay.openFirewall      = true;
+  #   dedicatedServer.openFirewall = false;
+  #   extraCompatPackages = with pkgs; [ proton-ge-bin ];
+  # };
 
   # ── GameMode ───────────────────────────────────────────────────────────────
   # Lets games request a performance CPU governor, reduced background process
@@ -43,12 +37,8 @@
                    # Enable per game: mangohud %command%  (or gamemoderun mangohud %command%)
     goverlay       # graphical config editor for MangoHud
 
-    # Discord
-    # vesktop is strongly preferred over the official discord package:
-    #  - ships Vencord (plugin system) built in
-    #  - updates independently of nixpkgs so you won't hit "client outdated" errors
-    #  - proper Wayland screen share via Pipewire out of the box
-    vesktop
+    # Discord — unfree, install manually after enabling allowUnfree
+    # vesktop
 
     # Useful for checking what Proton version a game needs before launching
     # Visit protondb.com for community compatibility reports
