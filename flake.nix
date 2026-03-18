@@ -100,7 +100,7 @@
       framework = mkSystem {
         hostname = "framework";
         extraModules = [
-          nixos-hardware.nixosModules.framework-13-11th-gen-intel
+          nixos-hardware.nixosModules.framework-11th-gen-intel
         ];
       };
 
