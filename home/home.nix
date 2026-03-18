@@ -47,7 +47,7 @@
         # Fullscreen
         "Mod+F"            = action.fullscreen-window;
         # Lock screen
-        "Mod+Shift+L"      = action.spawn "swaylock";
+        "Mod+Shift+S"      = action.spawn "swaylock";
         # Exit niri
         "Mod+Shift+E"      = action.quit;
         # Volume (using wpctl via pipewire)
