@@ -17,6 +17,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # DankMaterialShell — Material Design shell layer for niri
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Declarative Rust toolchain management
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -52,7 +58,7 @@
   };
 
   outputs = {
-    self, nixpkgs, nixos-hardware, home-manager, niri, masterblaster, rust-overlay,
+    self, nixpkgs, nixos-hardware, home-manager, niri, dms, masterblaster, rust-overlay,
     ...
   }@inputs:
   let

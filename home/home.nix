@@ -1,6 +1,10 @@
 { inputs, pkgs, lib, ... }:
 
 {
+  imports = [
+    inputs.dms.homeModules.dank-material-shell
+    inputs.dms.homeModules.niri
+  ];
   home.username = "you";        # change to your actual username
   home.homeDirectory = "/home/you"; # change accordingly
 
@@ -79,7 +83,7 @@
 
       # Startup applications
       spawn-at-startup = [
-        { command = [ "waybar" ]; }
+        # waybar removed — DMS manages the bar via programs.dank-material-shell
         { command = [ "mako" ]; }
         { command = [ "swaybg" "-i" "~/.config/wallpaper.jpg" "-m" "fill" ]; }
         { command = [ "xwayland-satellite" ]; }  # X11 app support
@@ -92,6 +96,15 @@
           ];
         }
       ];
+    };
+  };
+
+  # ── DankMaterialShell ─────────────────────────────────────────────────────
+  programs.dank-material-shell = {
+    enable = true;
+    niri = {
+      enableKeybinds = true;  # auto-configures launcher, notifications, etc.
+      enableSpawn    = true;  # auto-starts DMS with niri
     };
   };
 
