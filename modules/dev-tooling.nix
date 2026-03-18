@@ -81,36 +81,11 @@
     uv             # fast Python package/project manager (Rust-based, Astral)
                    # use `uv run` and `uv venv` for quick one-off environments
 
-    # ── marimo — dedicated environment ────────────────────────────────────
-    # marimo is installed as a Nix-managed Python environment, not via pip.
-    # This means it's reproducible, won't conflict with project deps, and
-    # is always available globally regardless of what virtualenv is active.
-    #
-    # Includes a curated set of packages that marimo notebooks commonly need.
-    # Add more by extending the list below — `nix search nixpkgs python3Packages`
-    # to find package names.
-    (python3.withPackages (ps: with ps; [
-      # marimo itself
-      marimo
-
-      # Core scientific stack — available in every marimo notebook
-      numpy
-      pandas
-      polars          # faster DataFrame library, increasingly common
-      matplotlib
-      seaborn
-      plotly          # interactive charts (marimo has native plotly support)
-      altair          # declarative visualisation (great with marimo)
-
-      # Utilities commonly needed in notebooks
-      requests
-      httpx
-      pydantic
-      python-dotenv
-
-      # Jupyter compatibility (marimo can run .ipynb files)
-      ipykernel
-    ]))
+    # ── marimo — disabled: nixpkgs 0.19.4 patch is broken, re-enable when fixed
+    # (python3.withPackages (ps: with ps; [
+    #   marimo numpy pandas polars matplotlib seaborn plotly altair
+    #   requests httpx pydantic python-dotenv ipykernel
+    # ]))
   ];
 
   # ── sccache config — shared Rust compilation cache ────────────────────────
