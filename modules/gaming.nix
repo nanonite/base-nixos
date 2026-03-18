@@ -4,10 +4,9 @@
   # ── 32-bit support ─────────────────────────────────────────────────────────
   # Steam and Proton are 32-bit applications. Without this, Steam won't launch.
 
-  hardware.opengl = {
+  hardware.graphics = {
     enable        = true;
-    driSupport    = true;
-    driSupport32Bit = true;
+    enable32Bit   = true;
   };
 
   # ── Steam ──────────────────────────────────────────────────────────────────

@@ -144,7 +144,6 @@
 
   # ── Audio (Pipewire) ──────────────────────────────────────────────────────
 
-  sound.enable = false; # must be false when using pipewire
   hardware.pulseaudio.enable = false;
 
   services.pipewire = {
