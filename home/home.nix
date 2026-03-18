@@ -310,6 +310,6 @@
     wev          # Wayland event viewer (useful for finding key names for niri)
 
     # Notes
-    obsidian     # Electron app — uses Wayland natively via NIXOS_OZONE_WL in common.nix
+    # obsidian  # unfree — install manually after adding allowUnfree = true
   ];
 }
