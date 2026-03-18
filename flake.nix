@@ -31,30 +31,17 @@
     };
 
     # ── Agent Framework ─────────────────────────────────────────────────────────
-    # NOTE: Run `nix flake show <url>` to verify each of these has flake outputs
-    # before relying on inputs.<name>.packages.${system}.default in agent-framework.nix.
-    # The plan's "Items for Claude Code to Investigate" section lists them all.
+    # NOTE: These inputs are commented out until each repo is confirmed to have
+    # a flake.nix with packages.${system}.default output.
+    # Verify with: nix flake show <url>
 
-    # MCP server composition — composes multiple MCP servers into unified tool surface
-    chainlink.url              = "github:dollspace-gay/chainlink";
-
-    # Orchestration router — Opus plans, agents execute; handles task dispatch
-    exomonad.url               = "github:tidepool-heavy-industries/exomonad";
-
-    # Recursive LM self-reflection engine
-    axon.url                   = "github:Diogenesoftoronto/axon";
-
-    # Agent shell — constrained, structured, agent-safe environment
-    kaish.url                  = "github:tobert/kaish";
-
-    # Context window management (per-agent + planner)
-    context-mode.url           = "github:mksglu/context-mode";
-
-    # Learning opportunities / deliberate skill development
-    learning-opportunities.url = "github:DrCatHicks/learning-opportunities";
-
-    # Tracing / observability for agent runs
-    tracey.url                 = "github:bearcove/tracey";
+    # chainlink.url              = "github:dollspace-gay/chainlink";
+    # exomonad.url               = "github:tidepool-heavy-industries/exomonad";
+    # axon.url                   = "github:Diogenesoftoronto/axon";
+    # kaish.url                  = "github:tobert/kaish";
+    # context-mode.url           = "github:mksglu/context-mode";
+    # learning-opportunities.url = "github:DrCatHicks/learning-opportunities";
+    # tracey.url                 = "github:bearcove/tracey";
 
     # ── Non-flake packages ──────────────────────────────────────────────────────
     # These have no guaranteed flake outputs — derivations written in agent-framework.nix:
@@ -66,7 +53,6 @@
 
   outputs = {
     self, nixpkgs, nixos-hardware, home-manager, niri, masterblaster, rust-overlay,
-    chainlink, exomonad, axon, kaish, context-mode, learning-opportunities, tracey,
     ...
   }@inputs:
   let
@@ -85,7 +71,8 @@
           ./modules/common.nix
 
           # Agentic coding framework (orchestration, JIRA CLI, benchmark toggle)
-          ./modules/agent-framework.nix
+          # TODO: re-enable after verifying all agent input flakes exist
+          # ./modules/agent-framework.nix
 
           # Host-specific config (hardware, hostname, compositor, etc.)
           ./hosts/${hostname}/configuration.nix
