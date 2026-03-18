@@ -183,7 +183,8 @@
     git
     curl
     wget
-    inputs.masterblaster.packages.${pkgs.system}.default
+    # TODO: re-enable after verifying masterblaster has flake packages output
+    # inputs.masterblaster.packages.${pkgs.system}.default
   ];
 
   system.stateVersion = "25.05"; # do NOT change after first install
