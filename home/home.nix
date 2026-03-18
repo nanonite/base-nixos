@@ -17,46 +17,46 @@
   programs.niri = {
     settings = {
       # Key bindings
-      binds = with inputs.niri.lib.kdl; {
+      binds = with config.lib.niri.actions; {
         # Terminal
-        "Mod+Return"       = action.spawn "foot";
+        "Mod+Return"       = spawn "foot";
         # App launcher
-        "Mod+D"            = action.spawn "fuzzel";
+        "Mod+D"            = spawn "fuzzel";
         # Close window
-        "Mod+Q"            = action.close-window;
+        "Mod+Q"            = close-window;
         # Focus windows
-        "Mod+H"            = action.focus-column-left;
-        "Mod+L"            = action.focus-column-right;
-        "Mod+J"            = action.focus-window-down;
-        "Mod+K"            = action.focus-window-up;
+        "Mod+H"            = focus-column-left;
+        "Mod+L"            = focus-column-right;
+        "Mod+J"            = focus-window-down;
+        "Mod+K"            = focus-window-up;
         # Move windows
-        "Mod+Shift+H"      = action.move-column-left;
-        "Mod+Shift+L"      = action.move-column-right;
+        "Mod+Shift+H"      = move-column-left;
+        "Mod+Shift+L"      = move-column-right;
         # Workspaces
-        "Mod+1"            = action.focus-workspace 1;
-        "Mod+2"            = action.focus-workspace 2;
-        "Mod+3"            = action.focus-workspace 3;
-        "Mod+4"            = action.focus-workspace 4;
-        "Mod+5"            = action.focus-workspace 5;
-        "Mod+Shift+1"      = action.move-window-to-workspace 1;
-        "Mod+Shift+2"      = action.move-window-to-workspace 2;
-        "Mod+Shift+3"      = action.move-window-to-workspace 3;
-        # Screenshot (region)
-        "Print"            = action.screenshot;
-        "Mod+Print"        = action.screenshot-screen;
+        "Mod+1"            = focus-workspace 1;
+        "Mod+2"            = focus-workspace 2;
+        "Mod+3"            = focus-workspace 3;
+        "Mod+4"            = focus-workspace 4;
+        "Mod+5"            = focus-workspace 5;
+        "Mod+Shift+1"      = move-window-to-workspace 1;
+        "Mod+Shift+2"      = move-window-to-workspace 2;
+        "Mod+Shift+3"      = move-window-to-workspace 3;
+        # Screenshot
+        "Print"            = screenshot;
+        "Mod+Print"        = screenshot-screen;
         # Fullscreen
-        "Mod+F"            = action.fullscreen-window;
+        "Mod+F"            = fullscreen-window;
         # Lock screen
-        "Mod+Shift+S"      = action.spawn "swaylock";
+        "Mod+Shift+S"      = spawn "swaylock";
         # Exit niri
-        "Mod+Shift+E"      = action.quit;
+        "Mod+Shift+E"      = quit;
         # Volume (using wpctl via pipewire)
-        "XF86AudioRaiseVolume"  = action.spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+";
-        "XF86AudioLowerVolume"  = action.spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-";
-        "XF86AudioMute"         = action.spawn "wpctl" "set-mute"   "@DEFAULT_AUDIO_SINK@" "toggle";
+        "XF86AudioRaiseVolume"  = spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+";
+        "XF86AudioLowerVolume"  = spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-";
+        "XF86AudioMute"         = spawn "wpctl" "set-mute"   "@DEFAULT_AUDIO_SINK@" "toggle";
         # Backlight
-        "XF86MonBrightnessUp"   = action.spawn "light" "-A" "5";
-        "XF86MonBrightnessDown" = action.spawn "light" "-U" "5";
+        "XF86MonBrightnessUp"   = spawn "light" "-A" "5";
+        "XF86MonBrightnessDown" = spawn "light" "-U" "5";
       };
 
       # Window layout tweaks
