@@ -2,6 +2,7 @@
 
 {
   imports = [
+    inputs.niri.homeModules.niri    # provides config.lib.niri.actions (needed by DMS)
     inputs.dms.homeModules.dank-material-shell
     inputs.dms.homeModules.niri
   ];
@@ -16,53 +17,28 @@
 
   # ── niri Wayland compositor config ────────────────────────────────────────
   # The niri HM module manages ~/.config/niri/config.kdl declaratively.
-  # Keybinds use the Mod key (Super/Windows key by default).
-
-  programs.niri = {
-    settings = {
-
-      # Window layout tweaks
-      layout = {
-        gaps = 8;
-        center-focused-column = "never";
-        default-column-width.proportion = 0.5;
-        focus-ring = {
-          enable = true;
-          width  = 2;
-          active.color   = "#89b4fa"; # blue (Catppuccin Mocha)
-          inactive.color = "#313244";
-        };
-      };
-
-      # Output configuration — niri auto-detects, but you can be explicit
-      # outputs."eDP-1" = {
-      #   scale = 1.5;  # increase for HiDPI
-      # };
-
-      # Startup applications
-      spawn-at-startup = [
-        # waybar removed — DMS manages the bar via programs.dank-material-shell
-        { command = [ "mako" ]; }
-        { command = [ "swaybg" "-i" "~/.config/wallpaper.jpg" "-m" "fill" ]; }
-        { command = [ "xwayland-satellite" ]; }  # X11 app support
-        {
-          command = [
-            "swayidle" "-w"
-            "timeout" "300"  "swaylock -f"
-            "timeout" "600"  "niri msg action power-off-monitors"
-            "before-sleep"   "swaylock -f"
-          ];
-        }
-      ];
-    };
-  };
+  # niri config is fully managed by DMS (layout, colors, binds, outputs via includes).
+  # xwayland-satellite and swayidle can be added back as systemd user services if needed.
 
   # ── DankMaterialShell ─────────────────────────────────────────────────────
   programs.dank-material-shell = {
     enable = true;
+    enableSystemMonitoring = true;
+    enableVPN              = true;
+    enableDynamicTheming   = true;
+    enableAudioWavelength  = true;
+    enableCalendarEvents   = true;  # khal build was fixed in nixpkgs after Feb 28 2026
+    enableClipboardPaste   = true;
+    systemd = {
+      enable = true;           # run DMS as a systemd user service (generates config files before niri reads them)
+      restartIfChanged = true;
+    };
     niri = {
-      enableKeybinds = true;  # auto-configures launcher, notifications, etc.
-      enableSpawn    = true;  # auto-starts DMS with niri
+      enableKeybinds = true;
+      includes = {
+        enable = true;
+        filesToInclude = [ "alttab" "binds" "colors" "layout" "outputs" "wpblur" ];
+      };
     };
   };
 
@@ -259,6 +235,9 @@
   # ── User packages (installed via Home Manager, not system-wide) ───────────
 
   home.packages = with pkgs; [
+    # Browser
+    firefox
+
     # Utilities
     ripgrep
     fd

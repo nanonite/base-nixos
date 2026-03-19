@@ -15,8 +15,8 @@
   networking.hostName = "framework";
 
   # ── niri Wayland compositor ────────────────────────────────────────────────
-  # The niri NixOS module (from sodiboo/niri-flake) is included via flake.nix.
-  # This enables the niri session in your display manager / TTY login.
+  # Using nixpkgs niri (v25.11+) which supports `include` in config.kdl.
+  # niri-flake nixosModule was removed as it pins to older v25.08.
 
   programs.niri.enable = true;
 
@@ -33,11 +33,14 @@
 
   # Companion Wayland applications
   environment.systemPackages = with pkgs; [
+    # Backlight control (replaces programs.light which was removed from nixpkgs)
+    brightnessctl
+
     # Status bar
-    waybar
+    # waybar removed — DMS manages its own bar
 
     # App launcher (niri's recommended launcher — fast, Wayland-native)
-    fuzzel
+    # fuzzel removed — DMS has a built-in app launcher
 
     # Terminal — foot is small and fast; swap for alacritty/kitty if you prefer
     foot
@@ -57,12 +60,6 @@
     grim
     slurp  # region selector for grim
     wl-clipboard
-
-    # Wallpaper
-    swaybg
-
-    # Night mode
-    wlsunset
 
     # Polkit agent (needed for GUI apps that require elevated privileges)
     polkit_gnome
@@ -106,7 +103,6 @@
   # Framework keyboard backlight and screen backlight control.
   # Your user is already in the "video" group (set in common.nix).
 
-  programs.light.enable = true;   # brightnessctl alternative, works with waybar
 
   # ── Bluetooth ─────────────────────────────────────────────────────────────
 

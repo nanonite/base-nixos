@@ -95,7 +95,8 @@
           }
         ]
         # niri compositor — included for graphical hosts only
-        ++ (if withNiri then [ niri.nixosModules.niri ] else [])
+        # niri.nixosModules.niri removed — it pins niri v25.08 which lacks `include` support.
+        # nixpkgs niri v25.11+ has include support; enabled via programs.niri.enable in config.
         ++ extraModules;
       };
   in
