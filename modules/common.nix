@@ -8,6 +8,8 @@
 
 {
 
+  nixpkgs.config.allowUnfree = true;
+
   # ── Nix / Flakes ──────────────────────────────────────────────────────────
 
   nix = {

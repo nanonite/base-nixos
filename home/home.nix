@@ -238,6 +238,9 @@
     # Browser
     firefox
 
+    # Notes
+    obsidian
+
     # Utilities
     ripgrep
     fd
