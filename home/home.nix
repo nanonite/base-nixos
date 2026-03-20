@@ -263,6 +263,7 @@
     wev          # Wayland event viewer (useful for finding key names for niri)
 
     # Notes
-    # obsidian  # unfree — install manually after adding allowUnfree = true
+    obsidian   # unfree — allowUnfree enabled
+    vscode     # unfree — allowUnfree enabled
   ];
 }
