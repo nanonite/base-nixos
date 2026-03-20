@@ -90,12 +90,11 @@
               useGlobalPkgs    = true;   # share system nixpkgs (avoids duplicate downloads)
               useUserPackages  = true;   # install HM packages into the system profile
               extraSpecialArgs = { inherit inputs; };
-              users.you        = import ./home/home.nix; # replace "you" with your username
+              users.framework        = import ./home/home.nix; # replace "you" with your username
             };
           }
         ]
-        # niri compositor — included for graphical hosts only
-        ++ (if withNiri then [ niri.nixosModules.niri ] else [])
+        # niri compositor — included for graphical hosts only , removed because it pins niri to v25.08 which lakcs `include` support
         ++ extraModules;
       };
   in

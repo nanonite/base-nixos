@@ -33,11 +33,8 @@
 
   # Companion Wayland applications
   environment.systemPackages = with pkgs; [
-    # Status bar
-    waybar
-
-    # App launcher (niri's recommended launcher — fast, Wayland-native)
-    fuzzel
+    # Backlight control
+    brightnessctl
 
     # Terminal — foot is small and fast; swap for alacritty/kitty if you prefer
     foot
@@ -57,12 +54,6 @@
     grim
     slurp  # region selector for grim
     wl-clipboard
-
-    # Wallpaper
-    swaybg
-
-    # Night mode
-    wlsunset
 
     # Polkit agent (needed for GUI apps that require elevated privileges)
     polkit_gnome
@@ -102,11 +93,26 @@
   # Show battery percentage / status
   services.upower.enable = true;
 
-  # ── Backlight ─────────────────────────────────────────────────────────────
-  # Framework keyboard backlight and screen backlight control.
-  # Your user is already in the "video" group (set in common.nix).
+  # ── Snapshots (btrbk) ─────────────────────────────────────────────────────
+  # Daily snapshots of @ and @home into /.snapshots
+  # Run manually with: sudo btrbk run --progress
+  # List snapshots with: sudo btrbk list
 
-  programs.light.enable = true;   # brightnessctl alternative, works with waybar
+  services.btrbk.instances.btrbk = {
+    onCalendar = "daily";
+    settings = {
+      snapshot_preserve_min = "2d";
+      snapshot_preserve     = "7d 4w 6m";
+      volume."/btrfs" = {
+        snapshot_dir = "@snapshots";
+        subvolume."@"     = {};
+        subvolume."@home" = {};
+      };
+    };
+  };
+
+  # ── Docker ────────────────────────────────────────────────────────────────
+  virtualisation.docker.enable = true;
 
   # ── Bluetooth ─────────────────────────────────────────────────────────────
 
