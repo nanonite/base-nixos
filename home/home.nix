@@ -265,8 +265,23 @@
     # Creative
     blender
 
+    # AI tooling
+    claude-code  # unfree — DISABLE_AUTOUPDATER=1 is set automatically by nixpkgs wrapper
+
+    # Password manager
+    bitwarden-desktop
+    bitwarden-cli   # `bw` command for scripting / terminal access
+
     # Notes
-    obsidian   # unfree — allowUnfree enabled
-    vscode     # unfree — allowUnfree enabled
+    obsidian  # unfree — allowUnfree enabled
   ];
+
+  # ── VSCode ────────────────────────────────────────────────────────────────
+  programs.vscode = {
+    enable  = true;
+    package = pkgs.vscode;
+    profiles.default.userSettings = {
+      "claudeCode.claudeProcessWrapper" = "/etc/profiles/per-user/framework/bin/claude";
+    };
+  };
 }
