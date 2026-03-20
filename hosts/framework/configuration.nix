@@ -114,8 +114,8 @@
     settings = {
       snapshot_preserve_min = "2d";
       snapshot_preserve     = "7d 4w 6m";
-      volume."/" = {
-        snapshot_dir = ".snapshots";
+      volume."/btrfs" = {
+        snapshot_dir = "@snapshots";
         subvolume."@"     = {};
         subvolume."@home" = {};
       };

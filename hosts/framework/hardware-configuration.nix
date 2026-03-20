@@ -28,6 +28,13 @@
     options = [ "subvol=@nix" "compress=zstd" "noatime" ];
   };
 
+  # btrfs top-level mount — needed by btrbk to see raw subvolumes (@, @home, etc.)
+  fileSystems."/btrfs" = {
+    device  = "/dev/disk/by-uuid/abea7246-8a9f-4ebf-a76a-43c194129af4";
+    fsType  = "btrfs";
+    options = [ "subvolid=5" "noatime" ];
+  };
+
   fileSystems."/.snapshots" = {
     device  = "/dev/disk/by-uuid/abea7246-8a9f-4ebf-a76a-43c194129af4";
     fsType  = "btrfs";
