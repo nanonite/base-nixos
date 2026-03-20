@@ -1,57 +1,55 @@
-# ──────────────────────────────────────────────────────────────────────────────
-# THIS FILE IS GENERATED DURING INSTALLATION — do not write it by hand.
-#
-# After booting the NixOS ISO and partitioning your disk with btrfs subvolumes,
-# run: nixos-generate-config --root /mnt
-# This file will appear at /mnt/etc/nixos/hardware-configuration.nix.
-# Copy it here and commit it.
-#
-# Expected btrfs subvolume layout (created during installation):
-#
-#   @           →  /
-#   @home       →  /home
-#   @nix        →  /nix
-#   @snapshots  →  /.snapshots    (btrbk writes here)
-#   @swap       →  /swap          (btrfs swapfile lives here)
-#
-# Expected fileSystems entries after generate-config (you'll need to add
-# the mount options manually — nixos-generate-config doesn't detect them):
-#
-#   fileSystems."/" = {
-#     device  = "/dev/disk/by-uuid/YOUR-UUID";
-#     fsType  = "btrfs";
-#     options = [ "subvol=@" "compress=zstd" "noatime" ];
-#   };
-#   fileSystems."/home" = {
-#     device  = "/dev/disk/by-uuid/YOUR-UUID";
-#     fsType  = "btrfs";
-#     options = [ "subvol=@home" "compress=zstd" "noatime" ];
-#   };
-#   fileSystems."/nix" = {
-#     device  = "/dev/disk/by-uuid/YOUR-UUID";
-#     fsType  = "btrfs";
-#     options = [ "subvol=@nix" "compress=zstd" "noatime" ];
-#   };
-#   fileSystems."/.snapshots" = {
-#     device  = "/dev/disk/by-uuid/YOUR-UUID";
-#     fsType  = "btrfs";
-#     options = [ "subvol=@snapshots" "noatime" ];
-#   };
-#   fileSystems."/boot" = {
-#     device  = "/dev/disk/by-uuid/YOUR-EFI-UUID";
-#     fsType  = "vfat";
-#   };
-#   swapDevices = [{
-#     device = "/swap/swapfile";
-#     size   = 16 * 1024; # in MiB — set to your RAM size for hibernate support
-#   }];
-# ──────────────────────────────────────────────────────────────────────────────
-
-# Paste the generated hardware-configuration.nix content below this line:
-
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  # REPLACE THIS ENTIRE FILE with the output of:
-  # nixos-generate-config --root /mnt --show-hardware-config
+  imports = [
+    (modulesPath + "/installer/scan/not-detected.nix")
+  ];
+
+  boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
+  boot.initrd.kernelModules          = [ ];
+  boot.kernelModules                 = [ "kvm-intel" ];
+  boot.extraModulePackages           = [ ];
+
+  fileSystems."/" = {
+    device  = "/dev/disk/by-uuid/abea7246-8a9f-4ebf-a76a-43c194129af4";
+    fsType  = "btrfs";
+    options = [ "subvol=@" "compress=zstd" "noatime" ];
+  };
+
+  fileSystems."/home" = {
+    device  = "/dev/disk/by-uuid/abea7246-8a9f-4ebf-a76a-43c194129af4";
+    fsType  = "btrfs";
+    options = [ "subvol=@home" "compress=zstd" "noatime" ];
+  };
+
+  fileSystems."/nix" = {
+    device  = "/dev/disk/by-uuid/abea7246-8a9f-4ebf-a76a-43c194129af4";
+    fsType  = "btrfs";
+    options = [ "subvol=@nix" "compress=zstd" "noatime" ];
+  };
+
+  fileSystems."/.snapshots" = {
+    device  = "/dev/disk/by-uuid/abea7246-8a9f-4ebf-a76a-43c194129af4";
+    fsType  = "btrfs";
+    options = [ "subvol=@snapshots" "noatime" ];
+  };
+
+  fileSystems."/swap" = {
+    device  = "/dev/disk/by-uuid/abea7246-8a9f-4ebf-a76a-43c194129af4";
+    fsType  = "btrfs";
+    options = [ "subvol=@swap" "noatime" ];
+  };
+
+  fileSystems."/boot" = {
+    device  = "/dev/disk/by-uuid/ABC8-093E";
+    fsType  = "vfat";
+    options = [ "fmask=0137" "dmask=0027" ];  # restrict EFI permissions (fixes random-seed warning)
+  };
+
+  swapDevices = [{
+    device = "/swap/swapfile";
+  }];
+
+  nixpkgs.hostPlatform              = lib.mkDefault "x86_64-linux";
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

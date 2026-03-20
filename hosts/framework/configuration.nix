@@ -104,6 +104,24 @@
   # Your user is already in the "video" group (set in common.nix).
 
 
+  # ── Snapshots (btrbk) ─────────────────────────────────────────────────────
+  # Daily snapshots of @ and @home into /.snapshots
+  # Run manually with: sudo btrbk run --progress
+  # List snapshots with: sudo btrbk list
+
+  services.btrbk.instances.btrbk = {
+    onCalendar = "daily";
+    settings = {
+      snapshot_preserve_min = "2d";
+      snapshot_preserve     = "7d 4w 6m";
+      volume."/" = {
+        snapshot_dir = ".snapshots";
+        subvolume."@"     = {};
+        subvolume."@home" = {};
+      };
+    };
+  };
+
   # ── Bluetooth ─────────────────────────────────────────────────────────────
 
   hardware.bluetooth = {
