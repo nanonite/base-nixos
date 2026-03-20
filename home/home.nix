@@ -101,8 +101,12 @@
       set -g window-status-format         ' #I:#W '
       set -g window-status-current-format '#[fg=#1e1e2e,bg=#89b4fa,bold] #I:#W '
 
-      # True color support
-      set -as terminal-features ',tmux-256color:RGB'
+      # True color support — target xterm-kitty (what kitty sets $TERM to)
+      set -as terminal-features ",xterm-kitty:RGB"
+
+      # Undercurl / colored underlines (requires tmux 3.0+, supported by kitty natively)
+      set -as terminal-overrides ',*:Smulx=\E[4::%p1%dm'
+      set -as terminal-overrides ',*:Setulc=\E[58::2::%p1%{65536}%/%d::%p1%{256}%/%{255}%&%d::%p1%{255}%&%d%;m'
 
       # Pane border styling
       set -g pane-border-style        'fg=#313244'
@@ -128,6 +132,29 @@
         '';
       }
     ];
+  };
+
+  # ── Kitty terminal ────────────────────────────────────────────────────────
+  programs.kitty = {
+    enable = true;
+
+    font = {
+      name = "JetBrainsMono Nerd Font Mono";
+      size = 14;
+    };
+
+    # Disable title/cursor shape changes — tmux intercepts these OSC codes
+    shellIntegration.mode = "no-title no-cursor";
+    shellIntegration.enableBashIntegration = true;
+
+    settings = {
+      window_padding_width    = 8;
+      confirm_os_window_close = 0;
+      enable_audio_bell       = false;
+      scrollback_lines        = 10000;
+      repaint_delay           = 10;
+      sync_to_monitor         = true;
+    };
   };
 
   # ── VS Code ───────────────────────────────────────────────────────────────

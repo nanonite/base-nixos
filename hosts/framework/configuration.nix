@@ -42,8 +42,8 @@
     # App launcher (niri's recommended launcher — fast, Wayland-native)
     # fuzzel removed — DMS has a built-in app launcher
 
-    # Terminal — foot is small and fast; swap for alacritty/kitty if you prefer
-    foot
+    # Terminal — kitty with tmux integration
+    kitty
 
     # Screen locking and idle management
     swaylock
