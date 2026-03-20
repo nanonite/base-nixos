@@ -117,6 +117,7 @@
       "networkmanager"
       "video"        # backlight control
       "audio"
+      "wireshark"    # live packet capture without sudo
       "kvm"          # KVM access for masterblaster
       "libvirtd"
       "docker"
