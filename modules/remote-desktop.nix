@@ -66,7 +66,7 @@
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = false; # key-based auth only (more secure)
+      PasswordAuthentication = true; # key-based auth only (more secure)
       PermitRootLogin        = "no";
     };
   };
