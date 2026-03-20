@@ -262,6 +262,9 @@
     wl-clipboard
     wev          # Wayland event viewer (useful for finding key names for niri)
 
+    # Creative
+    blender
+
     # Notes
     obsidian   # unfree — allowUnfree enabled
     vscode     # unfree — allowUnfree enabled

@@ -119,6 +119,7 @@
       "audio"
       "kvm"          # KVM access for masterblaster
       "libvirtd"
+      "docker"
     ];
     shell = pkgs.bash;
   };
