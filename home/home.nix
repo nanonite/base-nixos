@@ -17,8 +17,19 @@
 
   # ── niri Wayland compositor config ────────────────────────────────────────
   # The niri HM module manages ~/.config/niri/config.kdl declaratively.
-  # niri config is fully managed by DMS (layout, colors, binds, outputs via includes).
-  # xwayland-satellite and swayidle can be added back as systemd user services if needed.
+  # DMS manages layout, colors, outputs via includes at runtime.
+  #
+  # KEYBINDINGS NOTE:
+  # DMS window management keybindings (focus, move, workspaces, terminal, etc.)
+  # are NOT set by enableKeybinds — that only covers DMS panel/launcher shortcuts.
+  # Niri bindings live in ~/.config/niri/dms/binds.kdl, written by DMS at runtime
+  # via: dms keybinds set niri "Mod+Key" "action" --desc "..."
+  # Or via the GUI: Mod+Comma → Keyboard Shortcuts Editor
+  #
+  # We intentionally do NOT manage binds.kdl via home-manager because that would
+  # make it a read-only symlink and break DMS's GUI editor.
+  # After configuring keybindings on a machine, back up the file:
+  #   cp ~/.config/niri/dms/binds.kdl ~/nix-workspace/hosts/framework/binds.kdl.bak
 
   # ── DankMaterialShell ─────────────────────────────────────────────────────
   programs.dank-material-shell = {
@@ -33,16 +44,16 @@
       enable = true;           # run DMS as a systemd user service (generates config files before niri reads them)
       restartIfChanged = true;
     };
-    niri = {
-      enableKeybinds = true;
-      includes = {
-        enable = true;
-        filesToInclude = [ "alttab" "binds" "colors" "layout" "outputs" "wpblur" ];
-      };
-    };
+    niri.enableKeybinds = true;
   };
 
   # ── tmux ──────────────────────────────────────────────────────────────────
+
+  # ── Atuin — shell history with Ctrl+R ─────────────────────────────────────
+  programs.atuin = {
+    enable = true;
+    enableBashIntegration = true;
+  };
 
   programs.tmux = {
     enable       = true;

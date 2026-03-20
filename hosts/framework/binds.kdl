@@ -1,0 +1,30 @@
+binds {
+    Mod+1 hotkey-overlay-title="Workspace 1" { focus-workspace 1; }
+    Mod+2 hotkey-overlay-title="Workspace 2" { focus-workspace 2; }
+    Mod+3 hotkey-overlay-title="Workspace 3" { focus-workspace 3; }
+    Mod+Ctrl+Down hotkey-overlay-title="Move window down" { move-window-down-or-to-workspace-down; }
+    Mod+Ctrl+Up hotkey-overlay-title="Move window up" { move-window-up-or-to-workspace-up; }
+    Mod+Down hotkey-overlay-title="Focus down" { focus-window-or-workspace-down; }
+    Mod+Shift+1 hotkey-overlay-title="Move to workspace 1" { move-window-to-workspace 1; }
+    Mod+Shift+2 hotkey-overlay-title="Move to workspace 2" { move-window-to-workspace 2; }
+    Mod+Shift+3 hotkey-overlay-title="Move to workspace 3" { move-window-to-workspace 3; }
+    Mod+Shift+J hotkey-overlay-title="Move window down" { move-window-down-or-to-workspace-down; }
+    Mod+Shift+K hotkey-overlay-title="Move window up" { move-window-up-or-to-workspace-up; }
+    Mod+Up hotkey-overlay-title="Focus up" { focus-window-or-workspace-up; }
+    Mod+BracketLeft hotkey-overlay-title="Consume into column" { consume-window-into-column; }
+    Mod+BracketRight hotkey-overlay-title="Expel from column" { expel-window-from-column; }
+    Mod+Ctrl+F hotkey-overlay-title="Maximize column" { maximize-column; }
+    Mod+Ctrl+Left hotkey-overlay-title="Move column left" { move-column-left-or-to-monitor-left; }
+    Mod+Ctrl+Right hotkey-overlay-title="Move column right" { move-column-right-or-to-monitor-right; }
+    Mod+F hotkey-overlay-title="Fullscreen" { fullscreen-window; }
+    Mod+H hotkey-overlay-title="Focus left" { focus-column-or-monitor-left; }
+    Mod+J hotkey-overlay-title="Focus down" { focus-window-down; }
+    Mod+K hotkey-overlay-title="Focus up" { focus-window-up; }
+    Mod+L hotkey-overlay-title="Focus right" { focus-column-right; }
+    Mod+Left hotkey-overlay-title="Focus left" { focus-column-or-monitor-left; }
+    Mod+Q hotkey-overlay-title="Close window" { close-window; }
+    Mod+Right hotkey-overlay-title="Focus right" { focus-column-or-monitor-right; }
+    Mod+Shift+H hotkey-overlay-title="Move column left" { move-column-left-or-to-monitor-left; }
+    Mod+Shift+L hotkey-overlay-title="Move column right" { move-column-right-or-to-monitor-right; }
+    Mod+Return hotkey-overlay-title="Terminal" { spawn "foot"; }
+}
