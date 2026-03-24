@@ -60,6 +60,8 @@
 
     # ── Network analysis ──────────────────────────────────────────────────
     nmap           # port scanning and network discovery
+    wireshark      # GUI packet analyser (setuid wrapper via programs.wireshark above)
+    tshark         # CLI packet analyser (part of wireshark)
 
     # ── Rust toolchain (system-wide stable) ───────────────────────────────
     # rust-bin comes from the rust-overlay flake injected in flake.nix.
