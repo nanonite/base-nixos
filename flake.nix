@@ -37,24 +37,9 @@
     };
 
     # ── Agent Framework ─────────────────────────────────────────────────────────
-    # NOTE: These inputs are commented out until each repo is confirmed to have
-    # a flake.nix with packages.${system}.default output.
-    # Verify with: nix flake show <url>
-
-    # chainlink.url              = "github:dollspace-gay/chainlink";
-    # exomonad.url               = "github:tidepool-heavy-industries/exomonad";
-    # axon.url                   = "github:Diogenesoftoronto/axon";
-    # kaish.url                  = "github:tobert/kaish";
-    # context-mode.url           = "github:mksglu/context-mode";
-    # learning-opportunities.url = "github:DrCatHicks/learning-opportunities";
-    # tracey.url                 = "github:bearcove/tracey";
-
-    # ── Non-flake packages ──────────────────────────────────────────────────────
-    # These have no guaranteed flake outputs — derivations written in agent-framework.nix:
-    #   monolith   → github:WingchunSiu/Monolith   (RLM reward signal — buildRustPackage)
-    #   crosslink  → lib.rs/crates/crosslink        (library only — Cargo dep, no derivation)
-    #   tilth      → crates.io/crates/tilth         (code intelligence MCP — buildRustPackage)
-    #   pyncd      → github:mit-zardini-lab/pyncd   (NCD similarity scoring — buildPythonPackage)
+    # All agent tools lack Nix flake outputs — built via custom derivations in pkgs/.
+    # See pkgs/default.nix for the full list and build status.
+    # crosslink is a library-only Cargo dependency — no binary derivation needed.
   };
 
   outputs = {
@@ -69,16 +54,19 @@
         inherit system;
         specialArgs = { inherit inputs; };
         modules = [
-          # Inject rust-overlay into nixpkgs so pkgs.rust-bin.* is available
-          # in system packages, Home Manager, and dev shells
-          ({ ... }: { nixpkgs.overlays = [ rust-overlay.overlays.default ]; })
+          # Inject overlays into nixpkgs:
+          #   rust-overlay  — pkgs.rust-bin.* for declarative Rust toolchain management
+          #   pkgs/default  — custom agent framework tools (added incrementally)
+          ({ ... }: { nixpkgs.overlays = [
+            rust-overlay.overlays.default
+            (import ./pkgs/default.nix)
+          ]; })
 
           # Core shared config (bootloader, Nix GC, btrfs, audio, portals, users)
           ./modules/common.nix
 
           # Agentic coding framework (orchestration, JIRA CLI, benchmark toggle)
-          # TODO: re-enable after verifying all agent input flakes exist
-          # ./modules/agent-framework.nix
+          ./modules/agent-framework.nix
 
           # Host-specific config (hardware, hostname, compositor, etc.)
           ./hosts/${hostname}/configuration.nix
