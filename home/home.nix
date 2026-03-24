@@ -32,16 +32,21 @@
 	enable = true;
 	restartIfChanged = true;
     };
-    niri = {
-      enableKeybinds = true;  # auto-configures launcher, notifications, etc.
-      includes = {
-        enable = true;
-        filesToInclude = [ "alttab" "binds" "colors" "layout" "outputs" "wpblur" ];
-      };
-    };
+    niri.enableKeybinds = true;
   };
 
   # ── tmux ──────────────────────────────────────────────────────────────────
+
+  # ── Atuin — shell history with Ctrl+R ─────────────────────────────────────
+  programs.atuin = {
+    enable = true;
+    enableBashIntegration = true;
+    settings = {
+	search_mode = "fuzzy";
+	filter_mode = "global";
+	show_preview = true;
+    };
+  };
 
   programs.tmux = {
     enable       = true;
@@ -89,8 +94,12 @@
       set -g window-status-format         ' #I:#W '
       set -g window-status-current-format '#[fg=#1e1e2e,bg=#89b4fa,bold] #I:#W '
 
-      # True color support
-      set -as terminal-features ',tmux-256color:RGB'
+      # True color support — target xterm-kitty (what kitty sets $TERM to)
+      set -as terminal-features ",xterm-kitty:RGB"
+
+      # Undercurl / colored underlines (requires tmux 3.0+, supported by kitty natively)
+      set -as terminal-overrides ',*:Smulx=\E[4::%p1%dm'
+      set -as terminal-overrides ',*:Setulc=\E[58::2::%p1%{65536}%/%d::%p1%{256}%/%{255}%&%d::%p1%{255}%&%d%;m'
 
       # Pane border styling
       set -g pane-border-style        'fg=#313244'
@@ -118,10 +127,29 @@
     ];
   };
 
-  # ── VS Code ───────────────────────────────────────────────────────────────
-  # Disabled for initial install — vscode requires allowUnfree.
-  # Re-enable after adding nixpkgs.config.allowUnfree = true to your config.
-  # programs.vscode = { ... };
+  # ── Kitty terminal ────────────────────────────────────────────────────────
+  programs.kitty = {
+    enable = true;
+
+    font = {
+      name = "JetBrainsMono Nerd Font Mono";
+      size = 14;
+    };
+
+    # Disable title/cursor shape changes — tmux intercepts these OSC codes
+    shellIntegration.mode = "no-title no-cursor";
+    shellIntegration.enableBashIntegration = true;
+
+    settings = {
+      window_padding_width    = 8;
+      confirm_os_window_close = 0;
+      enable_audio_bell       = false;
+      scrollback_lines        = 10000;
+      repaint_delay           = 10;
+      sync_to_monitor         = true;
+    };
+  };
+
 
   # ── Shell — bash with useful defaults ────────────────────────────────────
   # Swap for programs.zsh or programs.fish if you prefer
@@ -237,11 +265,15 @@
     # Browser
     firefox
 
-    #IDE
-    vscode
-
     # Notes
     obsidian
+
+    # AI tooling
+    claude-code
+
+    # Password manager
+    bitwarden-desktop
+    bitwarden-cli
 
     # Utilities
     ripgrep
@@ -270,4 +302,14 @@
     # Text editor
     emacs
   ];
+
+  # ── VSCode ────────────────────────────────────────────────────────────────
+  programs.vscode = {
+    enable  = true;
+    package = pkgs.vscode;  # FHS chroot — needed for extensions that download pre-compiled binaries
+    profiles.default.userSettings = {
+      "claudeCode.claudeProcessWrapper" = "/etc/profiles/per-user/framework/bin/claude";
+    };
+  };
+
 }

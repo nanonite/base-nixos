@@ -38,7 +38,7 @@
     goverlay       # graphical config editor for MangoHud
 
     # Discord — unfree, install manually after enabling allowUnfree
-    # vesktop
+    vesktop
 
     # Useful for checking what Proton version a game needs before launching
     # Visit protondb.com for community compatibility reports

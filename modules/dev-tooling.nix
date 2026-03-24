@@ -51,7 +51,17 @@
 # (via the direnv extension) picks it up automatically when you open the folder.
 
 {
+  # Wireshark — packet capture requires the setuid wrapper managed by the
+  # programs module (sets CAP_NET_RAW on dumpcap, creates the wireshark group).
+  # Add your user to the wireshark group: users.users.you.extraGroups = [ "wireshark" ]
+  programs.wireshark.enable = true;
+
   environment.systemPackages = with pkgs; [
+
+    # ── Network analysis ──────────────────────────────────────────────────
+    nmap           # port scanning and network discovery
+    wireshark
+    tshark
 
     # ── Rust toolchain (system-wide stable) ───────────────────────────────
     # rust-bin comes from the rust-overlay flake injected in flake.nix.

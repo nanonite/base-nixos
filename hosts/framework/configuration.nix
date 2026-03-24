@@ -36,8 +36,8 @@
     # Backlight control
     brightnessctl
 
-    # Terminal — foot is small and fast; swap for alacritty/kitty if you prefer
-    foot
+    # Terminal - kitty with tmux integration
+    kitty
 
     # Screen locking and idle management
     swaylock
@@ -57,6 +57,9 @@
 
     # Polkit agent (needed for GUI apps that require elevated privileges)
     polkit_gnome
+
+    # VLC
+    vlc
   ];
 
   # Polkit — required for apps like GParted, file managers to request sudo
