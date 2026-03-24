@@ -63,6 +63,9 @@
 
     # Polkit agent (needed for GUI apps that require elevated privileges)
     polkit_gnome
+
+    # VLC
+    vlc
   ];
 
   # Polkit — required for apps like GParted, file managers to request sudo

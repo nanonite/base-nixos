@@ -53,6 +53,11 @@
   programs.atuin = {
     enable = true;
     enableBashIntegration = true;
+    settings = {
+      search_mode = "fuzzy";
+      filter_mode = "global";
+      show_preview = true;
+    };
   };
 
   programs.tmux = {
@@ -156,11 +161,6 @@
       sync_to_monitor         = true;
     };
   };
-
-  # ── VS Code ───────────────────────────────────────────────────────────────
-  # Disabled for initial install — vscode requires allowUnfree.
-  # Re-enable after adding nixpkgs.config.allowUnfree = true to your config.
-  # programs.vscode = { ... };
 
   # ── Shell — bash with useful defaults ────────────────────────────────────
   # Swap for programs.zsh or programs.fish if you prefer
@@ -279,6 +279,13 @@
     # Notes
     obsidian
 
+    # AI tooling
+    claude-code
+
+    # Password manager
+    bitwarden-desktop
+    bitwarden-cli
+
     # Utilities
     ripgrep
     fd
@@ -317,7 +324,7 @@
   # ── VSCode ────────────────────────────────────────────────────────────────
   programs.vscode = {
     enable  = true;
-    package = pkgs.vscode;
+    package = pkgs.vscode;  # FHS chroot — needed for extensions that download pre-compiled binaries
     profiles.default.userSettings = {
       "claudeCode.claudeProcessWrapper" = "/etc/profiles/per-user/framework/bin/claude";
     };
