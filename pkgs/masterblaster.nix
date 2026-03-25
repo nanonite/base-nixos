@@ -17,6 +17,8 @@ buildGoModule {
     hash  = "sha256-hgZLMXU3OuYIJkY/tJJHqcgm1t9cpGyZTQDgW8aZI28=";
   };
 
-  # Run with fake hash first to get the real vendorHash from the error output
+  # Only build the root binary — exclude .dagger CI subdirectory
+  subPackages = [ "." ];
+
   vendorHash = "sha256-eB8BHIWuIqVgweUYaO6pb/dUs6GM5nxv/wJwWiPF0pM=";
 }
