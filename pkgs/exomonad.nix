@@ -12,7 +12,7 @@
 #   nix build .#exomonadWasm 2>&1 | grep "got:"  → fill outputHash in exomonad-wasm.nix
 #   nix build .#exomonad     2>&1 | grep "got:"  → fill cargoHash below
 
-{ rustPlatform, fetchFromGitHub, pkg-config, openssl, protobuf, exomonadWasm, makeWrapper }:
+{ rustPlatform, fetchFromGitHub, pkg-config, openssl, protobuf, exomonadWasm }:
 
 rustPlatform.buildRustPackage {
   pname   = "exomonad";
@@ -25,7 +25,7 @@ rustPlatform.buildRustPackage {
     hash  = "sha256-ILK9PEjJYvVq2IpnWsRFhOIkncEoOgobN7cA/an29kk=";
   };
 
-  nativeBuildInputs = [ pkg-config protobuf makeWrapper ];
+  nativeBuildInputs = [ pkg-config protobuf ];
   buildInputs       = [ openssl ];
 
   cargoHash = "sha256-09D4PCB5ZjDTNFPZm6JvWNdv/AQjurWp8MRiijVSmuA=";
@@ -34,13 +34,10 @@ rustPlatform.buildRustPackage {
   cargoTestFlags  = [ "-p" "exomonad" ];
 
   postInstall = ''
-    # Store WASM plugins in the package share directory
+    # Store WASM plugins in the package share directory.
+    # home-manager activation (home/home.nix) symlinks these into ~/.exo/wasm/
+    # which is where exomonad looks by default.
     mkdir -p $out/share/exomonad/wasm
     cp ${exomonadWasm}/*.wasm $out/share/exomonad/wasm/
-
-    # Wrap the binary so exomonad can find its WASM plugins without manual setup.
-    # EXOMONAD_WASM_DIR is checked before .exo/wasm/ and ~/.exo/wasm/.
-    wrapProgram $out/bin/exomonad \
-      --set-default EXOMONAD_WASM_DIR "$out/share/exomonad/wasm"
   '';
 }

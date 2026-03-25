@@ -270,6 +270,17 @@
     # password_file=/home/you/.config/wayvnc/password.ini
   '';
 
+  # ── exomonad WASM plugins ─────────────────────────────────────────────────
+  # exomonad looks for WASM in ~/.exo/wasm/ as its global fallback.
+  # Symlink the Nix-built plugins there so `exomonad new/init` finds them
+  # without manual setup. Updated automatically on nixos-rebuild.
+  home.activation.exomonadWasm = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    mkdir -p "$HOME/.exo/wasm"
+    for f in ${pkgs.exomonad}/share/exomonad/wasm/*.wasm; do
+      ln -sf "$f" "$HOME/.exo/wasm/$(basename $f)"
+    done
+  '';
+
   # ── User packages (installed via Home Manager, not system-wide) ───────────
 
   home.packages = with pkgs; [
