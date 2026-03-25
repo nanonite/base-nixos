@@ -31,10 +31,10 @@
     ast-grep
 
     # ── Recursive LM self-reflection ─────────────────────────────────────────
-    # pkgs.axon   # uncomment after filling hashes in pkgs/axon.nix
+    pkgs.axon
 
     # ── Code intelligence MCP server ─────────────────────────────────────────
-    # pkgs.tilth  # uncomment after filling hashes in pkgs/tilth.nix
+    pkgs.tilth
 
     # ── Rust test runner ──────────────────────────────────────────────────────
     # cargo-nextest: faster parallel test execution, better output formatting
