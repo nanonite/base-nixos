@@ -24,13 +24,14 @@
     # Usage:
     #   nix build .#mixtape
     #   mb mixtape publish agent-workbench:latest ./result
-    packages.${system}.mixtape = masterblaster.lib.buildMixtape {
-      inherit pkgs inputs;
-      module = ./mixtape.nix;
-      name   = "agent-workbench";
-      tag    = "latest";
+    packages.${system} = {
+      mixtape = masterblaster.lib.buildMixtape {
+        inherit pkgs inputs;
+        module = ./mixtape.nix;
+        name   = "agent-workbench";
+        tag    = "latest";
+      };
+      default = self.packages.${system}.mixtape;
     };
-
-    packages.${system}.default = self.packages.${system}.mixtape;
   };
 }
