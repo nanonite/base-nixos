@@ -65,7 +65,7 @@
         pkgs.axon
 
         # context-mode — context window manager (per-agent + planner preambles)
-        # pkgs."context-mode"
+        pkgs."context-mode"
 
         # chainlink — composes multiple MCP servers into a unified tool surface
         # Config: home/home.nix (chainlink stanza) and per-agent jcard toml
