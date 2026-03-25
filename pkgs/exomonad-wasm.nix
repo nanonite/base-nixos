@@ -10,7 +10,7 @@
 # Fill in outputHash:
 #   nix build .#exomonad-wasm 2>&1 | grep "got:"
 
-{ stdenv, fetchFromGitHub, wasmToolchain, wizer }:
+{ stdenv, fetchFromGitHub, wasmToolchain, wizer, cacert }:
 
 stdenv.mkDerivation {
   pname   = "exomonad-wasm";
@@ -23,7 +23,10 @@ stdenv.mkDerivation {
     hash  = "sha256-ILK9PEjJYvVq2IpnWsRFhOIkncEoOgobN7cA/an29kk=";
   };
 
-  nativeBuildInputs = [ wasmToolchain wizer ];
+  nativeBuildInputs = [ wasmToolchain wizer cacert ];
+
+  # Required for cabal to make HTTPS connections to head.hackage in the Nix sandbox
+  SSL_CERT_FILE = "${cacert}/etc/ssl/certs/ca-bundle.crt";
 
   # FOD: allows network access during build; reproducible once hash is known.
   # Run `nix build .#exomonad-wasm` with a placeholder hash to get the real one.
