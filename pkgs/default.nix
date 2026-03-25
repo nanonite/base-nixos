@@ -29,7 +29,10 @@ final: prev: {
   axon = final.callPackage ./axon.nix {};
 
   # tracey — structured observability for agent runs (Rust workspace)
-  tracey = final.callPackage ./tracey.nix {};
+  # DEFERRED: requires a two-phase build (Vite dashboard embedded via include_str! at compile
+  # time — build.rs runs pnpm/vite, outputs dist/ to OUT_DIR, Rust src embeds via include_str!).
+  # Fix: build dashboard as separate derivation, patch include_str! to absolute nix store paths.
+  # tracey = final.callPackage ./tracey.nix {};
 
   # chainlink — MCP server composition (Rust, chainlink/ subdir)
   chainlink = final.callPackage ./chainlink.nix {};
