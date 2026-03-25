@@ -21,12 +21,10 @@ rustPlatform.buildRustPackage {
     hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
 
-  # Rust workspace lives under rust/ subdirectory
-  sourceRoot = "source/rust";
-
+  # Cargo workspace is at repo root; rust/ holds the crate subdirectories
   cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
-  # Build only the main exomonad binary
+  # Build only the main exomonad binary from the workspace
   cargoBuildFlags = [ "-p" "exomonad" ];
   cargoTestFlags  = [ "-p" "exomonad" ];
 }
