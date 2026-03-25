@@ -32,14 +32,10 @@ rustPlatform.buildRustPackage rec {
     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
 
-  nativeBuildInputs = [ nodejs pnpm_9 pnpmConfigHook ];
+  # Tell pnpmConfigHook where package.json / pnpm-lock.yaml live
+  pnpmRoot = "crates/tracey/src/bridge/http/dashboard";
 
-  # configHook expects to run where pnpm-lock.yaml lives
-  preBuild = ''
-    pushd crates/tracey/src/bridge/http/dashboard > /dev/null
-    pnpm install --frozen-lockfile --offline
-    popd > /dev/null
-  '';
+  nativeBuildInputs = [ nodejs pnpm_9 pnpmConfigHook ];
 
   cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
