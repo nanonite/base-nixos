@@ -8,7 +8,7 @@
 # Fill in hashes:
 #   nix build .#exomonad 2>&1 | grep "got:"
 
-{ rustPlatform, fetchFromGitHub }:
+{ rustPlatform, fetchFromGitHub, pkg-config, openssl }:
 
 rustPlatform.buildRustPackage {
   pname   = "exomonad";
@@ -22,6 +22,9 @@ rustPlatform.buildRustPackage {
   };
 
   # Cargo workspace is at repo root; rust/ holds the crate subdirectories
+  nativeBuildInputs = [ pkg-config ];
+  buildInputs       = [ openssl ];
+
   cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
   # Build only the main exomonad binary from the workspace
