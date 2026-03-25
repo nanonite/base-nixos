@@ -1,44 +1,38 @@
 # jcard.toml — masterblaster sandbox config template
 #
 # Copy this to your workspace root and fill in the project-specific fields.
-# Launch with: mb up --config jcard.toml
+# Launch with: masterblaster up --config jcard.toml
+#
+# Schema reference: https://stereos.ai/reference/jcard-schema/
 
-mixtape = "coder-x86:latest"
+mixtape = "opencode-mixtape:latest"
 
-# Unique name for this sandbox (use project name)
-name = "my-project"
-
-[resources]
-cpus   = 4
-memory = "8G"
-disk   = "20G"
-
-[network]
-mode = "nat"
-
-# Mount your workspace into the sandbox
+# Mount your workspace into the sandbox (read/write)
 [[shared]]
 host  = "/home/goya/workspaces/my-project"  # ← update to actual path
 guest = "/workspace"
 
-# Mount the nixos config so provision.sh is accessible
+# Mount agent configs read-only so agents can read provision.sh but not modify it
 [[shared]]
-host  = "/home/goya/nix-workspace"
-guest = "/nix-workspace"
+host     = "/home/goya/agent-configs"
+guest    = "/agent-configs"
+readonly = true
 
-[secrets]
-ANTHROPIC_API_KEY = { env = "ANTHROPIC_API_KEY" }
-GEMINI_API_KEY    = { env = "GEMINI_API_KEY" }
-
-# Packages from nixpkgs installed at VM launch time
-# Custom tools (axon, tilth, etc.) are installed via provision.sh
 [[agents]]
-type    = "sandboxed"
+name    = "my-project"                       # ← update to project name
 harness = "claude-code"
-extraPackages = [
+type    = "sandboxed"
+workdir = "/workspace"
+restart = "no"
+
+extra_packages = [
   "bun",       # JS/TS runtime
   "ast-grep",  # structural code search
   "jq",
   "ripgrep",
   "fd",
 ]
+
+[agents.env]
+ANTHROPIC_API_KEY = "${ANTHROPIC_API_KEY}"
+GEMINI_API_KEY    = "${GEMINI_API_KEY}"
