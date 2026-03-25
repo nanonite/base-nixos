@@ -35,19 +35,20 @@ stdenv.mkDerivation {
   outputHash     = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
   postPatch = ''
-    # cabal.project.wasm references optional external roles hardcoded to the
-    # developer's local machine (/home/inanna/dev/shoal, /home/inanna/dev/penumbra).
-    # Remove them — only devswarm and e2e-test are needed.
+    # Remove developer-local external role paths (not present outside author's machine)
     sed -i '/shoal/d' cabal.project.wasm
     sed -i '/penumbra/d' cabal.project.wasm
+
+    # wasm32-wasi-cabal is compiled without TLS support so it cannot fetch the
+    # head.hackage index over HTTPS. Remove the head.hackage repository stanza —
+    # all packages it patches are already vendored under haskell/vendor/ and
+    # cabal.project.wasm sets allow-newer: all, so regular Hackage suffices.
+    sed -i '/^repository head\.hackage/,/^$/d' cabal.project.wasm
   '';
 
   buildPhase = ''
     export HOME=$TMPDIR
     export CABAL_DIR=$TMPDIR/cabal
-
-    # Fetch head.hackage index (patched packages required by cabal.project.wasm)
-    wasm32-wasi-cabal update --project-file=cabal.project.wasm
 
     # Compile devswarm role (planner + TL + dev + worker + testrunner)
     wasm32-wasi-cabal build \
