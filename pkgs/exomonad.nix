@@ -1,14 +1,18 @@
 # exomonad — task orchestration router (Opus planner → agent sandboxes)
-# Source: github:tidepool-heavy-industries/exomonad (Rust workspace at rust/)
-# Config: planner/exomonad.toml
+# Source: github:tidepool-heavy-industries/exomonad (Rust + Haskell WASM)
 #
-# NOTE: As of 2026-03-24, rust/exomonad/src/ appears empty upstream.
-# This derivation is a skeleton — update when the crate is implemented.
+# Two-phase build:
+#   exomonadWasm (pkgs/exomonad-wasm.nix) — Haskell roles compiled to wasm32-wasi
+#   buildRustPackage                       — Rust MCP server binary
 #
-# Fill in hashes:
-#   nix build .#exomonad 2>&1 | grep "got:"
+# WASM plugins are installed to $out/share/exomonad/wasm/; exomonad loads them
+# from there at runtime (override with EXOMONAD_WASM_DIR or ~/.exo/wasm/).
+#
+# Hash-filling:
+#   nix build .#exomonadWasm 2>&1 | grep "got:"  → fill outputHash in exomonad-wasm.nix
+#   nix build .#exomonad     2>&1 | grep "got:"  → fill cargoHash below
 
-{ rustPlatform, fetchFromGitHub, pkg-config, openssl, protobuf }:
+{ rustPlatform, fetchFromGitHub, pkg-config, openssl, protobuf, exomonadWasm }:
 
 rustPlatform.buildRustPackage {
   pname   = "exomonad";
@@ -21,13 +25,17 @@ rustPlatform.buildRustPackage {
     hash  = "sha256-ILK9PEjJYvVq2IpnWsRFhOIkncEoOgobN7cA/an29kk=";
   };
 
-  # Cargo workspace is at repo root; rust/ holds the crate subdirectories
   nativeBuildInputs = [ pkg-config protobuf ];
   buildInputs       = [ openssl ];
 
   cargoHash = "sha256-09D4PCB5ZjDTNFPZm6JvWNdv/AQjurWp8MRiijVSmuA=";
 
-  # Build only the main exomonad binary from the workspace
   cargoBuildFlags = [ "-p" "exomonad" ];
   cargoTestFlags  = [ "-p" "exomonad" ];
+
+  # Bundle WASM plugins alongside the binary
+  postInstall = ''
+    mkdir -p $out/share/exomonad/wasm
+    cp ${exomonadWasm}/*.wasm $out/share/exomonad/wasm/
+  '';
 }
