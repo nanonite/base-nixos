@@ -73,8 +73,7 @@
 
         # exomonad — routes tasks from Opus planner to agent sandboxes
         # Config: planner/exomonad.toml
-        # NOTE: rust/exomonad/src/ was empty upstream as of 2026-03-24 — verify before enabling
-        # pkgs.exomonad
+        pkgs.exomonad
 
         # ── Not binary tools — installed differently ─────────────────────────────
         # learning-opportunities — Claude Code plugin:
