@@ -62,7 +62,7 @@
         # pkgs.kaish
 
         # axon — recursive LM self-reflection engine
-        # pkgs.axon
+        pkgs.axon
 
         # context-mode — context window manager (per-agent + planner preambles)
         # pkgs."context-mode"
