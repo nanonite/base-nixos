@@ -18,4 +18,12 @@ rustPlatform.buildRustPackage {
   };
 
   cargoHash = "sha256-l8lTvcQETjhNYeC4fEM7BsuVOnb54goPRQd8v2YOfYw=";
+
+  # ouros-0.0.4 (transitive dep) has `include_str!("../../../README.md")`
+  # in src/lib.rs — designed to be used nested inside its own repo.
+  # In the Nix sandbox the path resolves to /build/README.md (one level
+  # above the unpacked source); create a stub to satisfy the macro.
+  postPatch = ''
+    touch ../README.md
+  '';
 }
