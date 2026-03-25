@@ -14,7 +14,7 @@ stdenv.mkDerivation {
     owner = "mksglu";
     repo  = "context-mode";
     rev   = "ed967fea414bdb67432d832c76a27cb768ac1dd7";
-    hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash  = "sha256-7FvqEw9s2rPbcEQdj/Lso0jQErKPzm8XH5OeoG0KaiA=";
   };
 
   nativeBuildInputs = [ makeWrapper ];

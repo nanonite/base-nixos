@@ -13,8 +13,8 @@ rustPlatform.buildRustPackage {
   src = fetchCrate {
     pname   = "tilth";
     version = "0.5.1";
-    hash    = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash    = "sha256-VrotfXFOF8qczKFGI7aXNRlnTLo4hZdZZoJCU8A+cIw=";
   };
 
-  cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  cargoHash = "sha256-N8ah9aQU24jmA2E5BiyYC12K4h1f3M530P5bcsBXgzA=";
 }

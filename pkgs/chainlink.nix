@@ -14,11 +14,11 @@ rustPlatform.buildRustPackage {
     owner = "dollspace-gay";
     repo  = "chainlink";
     rev   = "ab49ee11eb4d2539d7cfd6acae17eed9242c786b";
-    hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash  = "sha256-DAex8EFzEh1+kQv6384aITRkyiHRsfTElEoJHexDxfA=";
   };
 
   # Rust crate lives in the chainlink/ subdirectory of the repo
   sourceRoot = "source/chainlink";
 
-  cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  cargoHash = "sha256-YKkD0RjYRMkjoLhjsydv9HF+AuAAI+4Fqe6zx8NWZRA=";
 }

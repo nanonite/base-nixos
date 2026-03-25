@@ -14,8 +14,8 @@ rustPlatform.buildRustPackage {
     owner = "tobert";
     repo  = "kaish";
     rev   = "c18e77ef7d948ec1b8bbd04da05f0f038a735dbe";
-    hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash  = "sha256-4sYK6jvHw8UmxLyGeNhnmM/oIIBB9VdtNeIDkEvnlL4=";
   };
 
-  cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  cargoHash = "sha256-hcc2qK8pl8XO5i9wbGYwIl3Rshe4tSJextXmYE8svRU=";
 }
