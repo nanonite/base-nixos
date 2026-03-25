@@ -53,7 +53,7 @@
         pkgs.masterblaster
 
         # tilth — code intelligence MCP server
-        # pkgs.tilth
+        pkgs.tilth
 
         # tracey — structured observability for agent runs
         # pkgs.tracey
