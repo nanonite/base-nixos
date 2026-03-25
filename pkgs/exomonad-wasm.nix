@@ -10,7 +10,7 @@
 # Fill in outputHash:
 #   nix build .#exomonad-wasm 2>&1 | grep "got:"
 
-{ stdenv, fetchFromGitHub, wasmToolchain, wizer, cacert }:
+{ stdenv, fetchFromGitHub, wasmToolchain, wizer, cacert, curl }:
 
 stdenv.mkDerivation {
   pname   = "exomonad-wasm";
@@ -23,10 +23,11 @@ stdenv.mkDerivation {
     hash  = "sha256-ILK9PEjJYvVq2IpnWsRFhOIkncEoOgobN7cA/an29kk=";
   };
 
-  nativeBuildInputs = [ wasmToolchain wizer cacert ];
+  nativeBuildInputs = [ wasmToolchain wizer cacert curl ];
 
-  # Required for cabal to make HTTPS connections to head.hackage in the Nix sandbox
-  SSL_CERT_FILE = "${cacert}/etc/ssl/certs/ca-bundle.crt";
+  # Use system curl for HTTPS — wasm32-wasi-cabal's built-in HTTP client has no TLS.
+  # curl is from nixpkgs and has full HTTPS support.
+  CURL_CA_BUNDLE = "${cacert}/etc/ssl/certs/ca-bundle.crt";
 
   # FOD: allows network access during build; reproducible once hash is known.
   # Run `nix build .#exomonad-wasm` with a placeholder hash to get the real one.
@@ -39,16 +40,21 @@ stdenv.mkDerivation {
     sed -i '/shoal/d' cabal.project.wasm
     sed -i '/penumbra/d' cabal.project.wasm
 
-    # wasm32-wasi-cabal is compiled without TLS support so it cannot fetch the
-    # head.hackage index over HTTPS. Remove the head.hackage repository stanza —
-    # all packages it patches are already vendored under haskell/vendor/ and
-    # cabal.project.wasm sets allow-newer: all, so regular Hackage suffices.
+    # head.hackage only provides a patched 'time' package for wasm32 compatibility,
+    # but GHC 9.12 already ships time-1.14 as a boot library — not needed.
     sed -i '/^repository head\.hackage/,/^$/d' cabal.project.wasm
+
+    # Force cabal to use system curl (which has full HTTPS) instead of its
+    # built-in Haskell HTTP client (compiled without TLS in the wasm toolchain).
+    echo 'http-transport: curl' >> cabal.project.wasm
   '';
 
   buildPhase = ''
     export HOME=$TMPDIR
     export CABAL_DIR=$TMPDIR/cabal
+
+    # Fetch Hackage index (needed for aeson, unordered-containers, etc.)
+    wasm32-wasi-cabal update --project-file=cabal.project.wasm
 
     # Compile devswarm role (planner + TL + dev + worker + testrunner)
     wasm32-wasi-cabal build \
