@@ -43,6 +43,10 @@
         # ast-grep — structural code search/rewrite (AST-aware, not regex)
         ast-grep
 
+        # bun — fast JS/TS runtime; agents may generate and execute JS/TS scripts.
+        # Also satisfies context-mode's "install bun for faster JS/TS" tip.
+        bun
+
         # ── Custom derivations from pkgs/ overlay ────────────────────────────────
         # Workflow to activate each tool:
         #   1. nix build .#<tool> 2>&1 | grep "got:"   ← get correct hashes
