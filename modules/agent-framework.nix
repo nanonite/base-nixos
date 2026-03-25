@@ -69,7 +69,7 @@
 
         # chainlink — composes multiple MCP servers into a unified tool surface
         # Config: home/home.nix (chainlink stanza) and per-agent jcard toml
-        # pkgs.chainlink
+        pkgs.chainlink
 
         # exomonad — routes tasks from Opus planner to agent sandboxes
         # Config: planner/exomonad.toml
