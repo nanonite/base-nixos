@@ -4,11 +4,14 @@
 # Fill in hashes:
 #   nix build .#kaish 2>&1 | grep "got:"
 
-{ rustPlatform, fetchFromGitHub }:
+{ rustPlatform, fetchFromGitHub, pkg-config, openssl }:
 
 rustPlatform.buildRustPackage {
   pname   = "kaish";
   version = "unstable-2026-01-15";
+
+  nativeBuildInputs = [ pkg-config ];
+  buildInputs       = [ openssl ];
 
   src = fetchFromGitHub {
     owner = "tobert";
