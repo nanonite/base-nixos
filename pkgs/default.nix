@@ -14,6 +14,8 @@
 #   monolith-rlm           — Python library "deeprecurse", no entry points
 #   pyncd                  — Research notebooks, no package structure
 
+{ ghc-wasm-meta }:
+
 final: prev: {
 
   # masterblaster (mb) — stereOS AI agent sandbox manager (Go)
@@ -28,16 +30,18 @@ final: prev: {
   # axon — recursive LM self-reflection engine (Rust)
   axon = final.callPackage ./axon.nix {};
 
-  # tracey — structured observability for agent runs (Rust workspace)
-  # DEFERRED: requires a two-phase build (Vite dashboard embedded via include_str! at compile
-  # time — build.rs runs pnpm/vite, outputs dist/ to OUT_DIR, Rust src embeds via include_str!).
-  # Fix: build dashboard as separate derivation, patch include_str! to absolute nix store paths.
-  # tracey = final.callPackage ./tracey.nix {};
+  # tracey — REMOVED: requires two-phase build (Vite dashboard via include_str!) +
+  # pnpm offline tarball errors. Not currently used.
 
   # chainlink — MCP server composition (Rust, chainlink/ subdir)
   chainlink = final.callPackage ./chainlink.nix {};
 
-  # exomonad — task orchestration router (Rust, rust/ subdir, WIP upstream)
+  # exomonad-wasm — Haskell WASM plugins (FOD, built with GHC 9.12 wasm32-wasi)
+  exomonadWasm = final.callPackage ./exomonad-wasm.nix {
+    wasmToolchain = ghc-wasm-meta.packages.${final.stdenv.hostPlatform.system}.all_9_12;
+  };
+
+  # exomonad — task orchestration router (Rust binary; WASM injected via callPackage)
   exomonad = final.callPackage ./exomonad.nix {};
 
   # context-mode — context window manager (TypeScript, pre-bundled, Node.js wrapper)

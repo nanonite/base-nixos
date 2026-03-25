@@ -29,6 +29,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # GHC 9.12 wasm32-wasi cross-compilation toolchain
+    # Needed to build exomonad's Haskell WASM plugins (wasm-guest-devswarm.wasm)
+    ghc-wasm-meta.url = "gitlab:haskell-wasm/ghc-wasm-meta?host=gitlab.haskell.org";
+
     # ── Agent Infrastructure ────────────────────────────────────────────────────
     # masterblaster (mb) — stereOS AI agent sandbox manager
     masterblaster = {
@@ -44,6 +48,7 @@
 
   outputs = {
     self, nixpkgs, nixos-hardware, home-manager, niri, dms, masterblaster, rust-overlay,
+    ghc-wasm-meta,
     ...
   }@inputs:
   let
@@ -54,7 +59,7 @@
     pkgs = nixpkgs.legacyPackages.${system}.extend
       (nixpkgs.lib.composeExtensions
         rust-overlay.overlays.default
-        (import ./pkgs/default.nix));
+        (import ./pkgs/default.nix { inherit ghc-wasm-meta; }));
 
     # Helper to build a NixOS system config — keeps outputs block clean.
     # withNiri: set false for headless hosts (embedded) that don't run a compositor.
@@ -66,9 +71,9 @@
           # Inject overlays into nixpkgs:
           #   rust-overlay  — pkgs.rust-bin.* for declarative Rust toolchain management
           #   pkgs/default  — custom agent framework tools (added incrementally)
-          ({ ... }: { nixpkgs.overlays = [
+          ({ inputs, ... }: { nixpkgs.overlays = [
             rust-overlay.overlays.default
-            (import ./pkgs/default.nix)
+            (import ./pkgs/default.nix { inherit (inputs) ghc-wasm-meta; })
           ]; })
 
           # Core shared config (bootloader, Nix GC, btrfs, audio, portals, users)
@@ -105,9 +110,9 @@
         tilth
         kaish
         axon
-        tracey
         chainlink
-        exomonad;
+        exomonad
+        exomonadWasm;
       inherit (pkgs) context-mode;
     };
 
