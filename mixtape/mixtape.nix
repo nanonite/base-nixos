@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, ... }:
 
 # ── mixtape.nix — packages baked into every agent sandbox ────────────────────
 #
@@ -9,35 +9,39 @@
 # Build: nix build mixtape/.#mixtape
 # Publish: mb mixtape publish agent-workbench:latest ./result
 # Use: mb pull agent-workbench:latest  (in each jcard toml)
+#
+# Custom tools come from the pkgs/ overlay (applied in mixtape/flake.nix).
+# Uncomment each tool after filling in its hashes in pkgs/<tool>.nix.
 
 {
   environment.systemPackages = with pkgs; [
 
-    # ── Agent shell ─────────────────────────────────────────────────────────
+    # ── Agent shell ──────────────────────────────────────────────────────────
     # kaish — constrained, structured, agent-safe shell
-    inputs.kaish.packages.${pkgs.system}.default
+    # pkgs.kaish   # uncomment after filling hashes in pkgs/kaish.nix
 
-    # ── tmux (tmux-mcp configured separately) ───────────────────────────────
+    # ── tmux (tmux-mcp configured separately) ────────────────────────────────
     # tmux exposes the terminal multiplexer as an MCP server via tmux-mcp.
     # Agents can open panes, run commands, and read output through structured calls.
-    # tmux-mcp: check https://github.com/punkpeye/tmux-mcp for install instructions
-    # and configure it in the agent's chainlink MCP composition config.
+    # tmux-mcp: https://github.com/punkpeye/tmux-mcp — configure in chainlink MCP config
     tmux
 
-    # ── Structural code search ───────────────────────────────────────────────
-    # ast-grep understands AST structure — finds/rewrites code patterns, not just text
+    # ── Structural code search ────────────────────────────────────────────────
+    # ast-grep understands AST structure — finds/rewrites code patterns, not regex
     ast-grep
 
-    # ── Recursive LM self-reflection ────────────────────────────────────────
-    inputs.axon.packages.${pkgs.system}.default
+    # ── Recursive LM self-reflection ─────────────────────────────────────────
+    # pkgs.axon   # uncomment after filling hashes in pkgs/axon.nix
 
-    # ── Rust test runner ────────────────────────────────────────────────────
+    # ── Code intelligence MCP server ─────────────────────────────────────────
+    # pkgs.tilth  # uncomment after filling hashes in pkgs/tilth.nix
+
+    # ── Rust test runner ──────────────────────────────────────────────────────
     # cargo-nextest: faster parallel test execution, better output formatting
     cargo-nextest
 
-    # ── Python analysis stack ────────────────────────────────────────────────
+    # ── Python analysis stack ─────────────────────────────────────────────────
     # marimo: agent-side notebooks for data analysis and benchmark output
-    # pyncd is included here once the derivation is written (see agent-framework.nix)
     (python3.withPackages (ps: with ps; [
       marimo
       numpy
@@ -46,24 +50,14 @@
       matplotlib
       plotly
       altair
-
-      # pyncd — NCD similarity scoring for RLM layer
-      # TODO: add once derivation is verified:
-      # pyncd
     ]))
 
-    # ── Standard dev tools every agent needs ────────────────────────────────
+    # ── Standard dev tools every agent needs ─────────────────────────────────
     git
     ripgrep
     fd
     jq
     curl
-
-    # ── tilth — code intelligence MCP server ────────────────────────────────
-    # TODO: add buildRustPackage derivation once hash is verified (see agent-framework.nix)
-
-    # ── Monolith — RLM reward signal ────────────────────────────────────────
-    # TODO: add buildRustPackage derivation once hash is verified (see agent-framework.nix)
 
   ];
 

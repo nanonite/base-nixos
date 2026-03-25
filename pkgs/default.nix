@@ -1,44 +1,43 @@
 # pkgs/default.nix — custom overlay for agent framework tools
 #
 # All upstream repos exist on GitHub but lack Nix flake outputs.
-# Derivations are added one at a time as they are verified to build.
-# Apply this overlay in flake.nix and mixtape/flake.nix.
+# Derivations are written here and activated incrementally:
+#   1. Run: nix build .#<tool> 2>&1 | grep "got:"   (on laptop, fills in hashes)
+#   2. Replace fake hashes in pkgs/<tool>.nix with the "got:" values
+#   3. Uncomment pkgs.<tool> in modules/agent-framework.nix
 #
-# Usage in flake.nix:
-#   nixpkgs.overlays = [ rust-overlay.overlays.default (import ./pkgs/default.nix) ];
+# This overlay is lazy — tools are only built when referenced in active config.
+# All tools are exposed here so `nix build .#<tool>` works for hash-filling.
+#
+# Not included (not binary tools):
+#   learning-opportunities — Claude Code plugin, install via: claude plugin install
+#   monolith-rlm           — Python library "deeprecurse", no entry points
+#   pyncd                  — Research notebooks, no package structure
 
 final: prev: {
 
-  # ── Tools added incrementally (uncomment after derivation is verified) ──────
+  # masterblaster (mb) — stereOS AI agent sandbox manager (Go)
+  masterblaster = final.callPackage ./masterblaster.nix {};
 
-  # tilth — code intelligence MCP server (crates.io/crates/tilth)
-  # tilth = final.callPackage ./tilth.nix {};
+  # tilth — code intelligence MCP server (Rust, crates.io)
+  tilth = final.callPackage ./tilth.nix {};
 
-  # tracey — structured observability for agent runs (github:bearcove/tracey)
-  # tracey = final.callPackage ./tracey.nix {};
+  # kaish — constrained agent shell (Rust)
+  kaish = final.callPackage ./kaish.nix {};
 
-  # kaish — constrained agent shell (github:tobert/kaish)
-  # kaish = final.callPackage ./kaish.nix {};
+  # axon — recursive LM self-reflection engine (Rust)
+  axon = final.callPackage ./axon.nix {};
 
-  # axon — recursive LM self-reflection engine (github:Diogenesoftoronto/axon)
-  # axon = final.callPackage ./axon.nix {};
+  # tracey — structured observability for agent runs (Rust workspace)
+  tracey = final.callPackage ./tracey.nix {};
 
-  # context-mode — context window manager (github:mksglu/context-mode)
-  # context-mode = final.callPackage ./context-mode.nix {};
+  # chainlink — MCP server composition (Rust, chainlink/ subdir)
+  chainlink = final.callPackage ./chainlink.nix {};
 
-  # chainlink — MCP server composition (github:dollspace-gay/chainlink)
-  # chainlink = final.callPackage ./chainlink.nix {};
+  # exomonad — task orchestration router (Rust, rust/ subdir, WIP upstream)
+  exomonad = final.callPackage ./exomonad.nix {};
 
-  # exomonad — task orchestration router (github:tidepool-heavy-industries/exomonad)
-  # exomonad = final.callPackage ./exomonad.nix {};
-
-  # learning-opportunities — (github:DrCatHicks/learning-opportunities)
-  # learning-opportunities = final.callPackage ./learning-opportunities.nix {};
-
-  # monolith-rlm — RLM reward signal (github:WingchunSiu/Monolith)
-  # monolith-rlm = final.callPackage ./monolith.nix {};
-
-  # pyncd — NCD similarity scoring (github:mit-zardini-lab/pyncd)
-  # pyncd = final.python3Packages.callPackage ./pyncd.nix {};
+  # context-mode — context window manager (TypeScript, pre-bundled, Node.js wrapper)
+  context-mode = final.callPackage ./context-mode.nix {};
 
 }
