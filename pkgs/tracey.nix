@@ -9,7 +9,7 @@
 #   2. nix build .#tracey 2>&1 | grep "got:"  → pnpmDeps hash
 #   3. nix build .#tracey 2>&1 | grep "got:"  → cargoHash
 
-{ rustPlatform, fetchFromGitHub, nodejs, pnpm_9 }:
+{ rustPlatform, fetchFromGitHub, nodejs, pnpm_9, fetchPnpmDeps, pnpmConfigHook }:
 
 rustPlatform.buildRustPackage rec {
   pname   = "tracey";
@@ -23,15 +23,16 @@ rustPlatform.buildRustPackage rec {
   };
 
   # Pre-fetch pnpm node_modules for the embedded Vite dashboard.
-  # The configHook installs them before the Rust build runs build.rs.
-  pnpmDeps = pnpm_9.fetchDeps {
+  # fetcherVersion = 2 matches pnpm lockfileVersion 9.0
+  pnpmDeps = fetchPnpmDeps {
     pname   = "${pname}-dashboard";
     inherit version src;
     sourceRoot = "source/crates/tracey/src/bridge/http/dashboard";
+    fetcherVersion = 2;
     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
 
-  nativeBuildInputs = [ nodejs pnpm_9 pnpm_9.configHook ];
+  nativeBuildInputs = [ nodejs pnpm_9 pnpmConfigHook ];
 
   # configHook expects to run where pnpm-lock.yaml lives
   preBuild = ''
