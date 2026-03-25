@@ -50,7 +50,7 @@
         #   3. Uncomment the line below
         #
         # masterblaster (mb) — stereOS AI agent sandbox manager
-        # pkgs.masterblaster
+        pkgs.masterblaster
 
         # tilth — code intelligence MCP server
         # pkgs.tilth
