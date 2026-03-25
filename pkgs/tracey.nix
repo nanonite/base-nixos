@@ -4,7 +4,7 @@
 # Fill in hashes:
 #   nix build .#tracey 2>&1 | grep "got:"
 
-{ rustPlatform, fetchFromGitHub }:
+{ rustPlatform, fetchFromGitHub, nodejs }:
 
 rustPlatform.buildRustPackage {
   pname   = "tracey";
@@ -16,6 +16,8 @@ rustPlatform.buildRustPackage {
     rev   = "6fe672f12dc7005a48a33f0f9c486794e49a9974";
     hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
+
+  nativeBuildInputs = [ nodejs ];
 
   cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
