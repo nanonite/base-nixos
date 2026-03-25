@@ -31,6 +31,14 @@ stdenv.mkDerivation {
   outputHashAlgo = "sha256";
   outputHash     = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
+  postPatch = ''
+    # cabal.project.wasm references optional external roles hardcoded to the
+    # developer's local machine (/home/inanna/dev/shoal, /home/inanna/dev/penumbra).
+    # Remove them — only devswarm and e2e-test are needed.
+    sed -i '/shoal/d' cabal.project.wasm
+    sed -i '/penumbra/d' cabal.project.wasm
+  '';
+
   buildPhase = ''
     export HOME=$TMPDIR
     export CABAL_DIR=$TMPDIR/cabal
