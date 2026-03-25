@@ -1,0 +1,44 @@
+# jcard.toml — masterblaster sandbox config template
+#
+# Copy this to your workspace root and fill in the project-specific fields.
+# Launch with: mb up --config jcard.toml
+
+mixtape = "coder-x86:latest"
+
+# Unique name for this sandbox (use project name)
+name = "my-project"
+
+[resources]
+cpus   = 4
+memory = "8G"
+disk   = "20G"
+
+[network]
+mode = "nat"
+
+# Mount your workspace into the sandbox
+[[shared]]
+host  = "/home/goya/workspaces/my-project"  # ← update to actual path
+guest = "/workspace"
+
+# Mount the nixos config so provision.sh is accessible
+[[shared]]
+host  = "/home/goya/nix-workspace"
+guest = "/nix-workspace"
+
+[secrets]
+ANTHROPIC_API_KEY = { env = "ANTHROPIC_API_KEY" }
+GEMINI_API_KEY    = { env = "GEMINI_API_KEY" }
+
+# Packages from nixpkgs installed at VM launch time
+# Custom tools (axon, tilth, etc.) are installed via provision.sh
+[[agents]]
+type    = "sandboxed"
+harness = "claude-code"
+extraPackages = [
+  "bun",       # JS/TS runtime
+  "ast-grep",  # structural code search
+  "jq",
+  "ripgrep",
+  "fd",
+]
