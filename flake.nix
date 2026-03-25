@@ -47,6 +47,15 @@
     ...
   }@inputs:
   let
+    system = "x86_64-linux";
+
+    # nixpkgs with both overlays applied — used for exposing pkgs/ tools as
+    # first-class flake outputs so `nix build .#<tool>` works for hash-filling.
+    pkgs = nixpkgs.legacyPackages.${system}.extend
+      (nixpkgs.lib.composeExtensions
+        rust-overlay.overlays.default
+        (import ./pkgs/default.nix));
+
     # Helper to build a NixOS system config — keeps outputs block clean.
     # withNiri: set false for headless hosts (embedded) that don't run a compositor.
     mkSystem = { hostname, system ? "x86_64-linux", extraModules ? [], withNiri ? true }:
@@ -89,6 +98,21 @@
       };
   in
   {
+    # ── Agent tool packages — for hash-filling workflow ────────────────────────
+    # Usage: nix build .#<tool> 2>&1 | grep "got:"
+    # Fill the "got:" hash into pkgs/<tool>.nix, then repeat for cargoHash/vendorHash.
+    packages.${system} = {
+      inherit (pkgs)
+        masterblaster
+        tilth
+        kaish
+        axon
+        tracey
+        chainlink
+        exomonad;
+      inherit (pkgs) context-mode;
+    };
+
     nixosConfigurations = {
 
       # ── Framework 13" 11th-gen Intel ──────────────────────────────────────────
