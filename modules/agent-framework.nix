@@ -34,10 +34,6 @@
 
       environment.systemPackages = with pkgs; [
 
-        # ── Agent sandbox manager ────────────────────────────────────────────────
-        # masterblaster (mb) — launches and manages stereOS AI agent sandboxes
-        inputs.masterblaster.packages.${pkgs.system}.default
-
         # ── Already in nixpkgs ───────────────────────────────────────────────────
 
         # go-jira — JIRA CLI for task lifecycle management
@@ -48,7 +44,13 @@
         ast-grep
 
         # ── Custom derivations from pkgs/ overlay ────────────────────────────────
-        # Uncomment each line after verifying the derivation builds (see pkgs/).
+        # Workflow to activate each tool:
+        #   1. nix build .#<tool> 2>&1 | grep "got:"   ← get correct hashes
+        #   2. Fill hashes in pkgs/<tool>.nix
+        #   3. Uncomment the line below
+        #
+        # masterblaster (mb) — stereOS AI agent sandbox manager
+        # pkgs.masterblaster
 
         # tilth — code intelligence MCP server
         # pkgs.tilth
@@ -71,13 +73,16 @@
 
         # exomonad — routes tasks from Opus planner to agent sandboxes
         # Config: planner/exomonad.toml
+        # NOTE: rust/exomonad/src/ was empty upstream as of 2026-03-24 — verify before enabling
         # pkgs.exomonad
 
-        # learning-opportunities
-        # pkgs."learning-opportunities"
-
-        # monolith-rlm — RLM reward signal
-        # pkgs.monolith-rlm
+        # ── Not binary tools — installed differently ─────────────────────────────
+        # learning-opportunities — Claude Code plugin:
+        #   claude plugin marketplace add https://github.com/DrCatHicks/learning-opportunities.git
+        #   Belongs in planner agent config, NOT in agent sandboxes (see updated_plan.md)
+        #
+        # monolith-rlm (deeprecurse) — Python library, no CLI entry points, no derivation
+        # pyncd — research notebooks only, no package structure, no derivation
 
       ];
 
