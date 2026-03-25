@@ -18,14 +18,14 @@ rustPlatform.buildRustPackage {
     owner = "tidepool-heavy-industries";
     repo  = "exomonad";
     rev   = "5dfab102fe65d5d1d57d54651c000b6de1336e70";
-    hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash  = "sha256-ILK9PEjJYvVq2IpnWsRFhOIkncEoOgobN7cA/an29kk=";
   };
 
   # Cargo workspace is at repo root; rust/ holds the crate subdirectories
   nativeBuildInputs = [ pkg-config protobuf ];
   buildInputs       = [ openssl ];
 
-  cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  cargoHash = "sha256-09D4PCB5ZjDTNFPZm6JvWNdv/AQjurWp8MRiijVSmuA=";
 
   # Build only the main exomonad binary from the workspace
   cargoBuildFlags = [ "-p" "exomonad" ];

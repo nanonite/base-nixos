@@ -14,9 +14,9 @@ buildGoModule {
     owner = "papercomputeco";
     repo  = "masterblaster";
     rev   = "0583118a806deeecd1b0d9dccf87b75a863f971e";
-    hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash  = "sha256-hgZLMXU3OuYIJkY/tJJHqcgm1t9cpGyZTQDgW8aZI28=";
   };
 
   # Run with fake hash first to get the real vendorHash from the error output
-  vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  vendorHash = "sha256-eB8BHIWuIqVgweUYaO6pb/dUs6GM5nxv/wJwWiPF0pM=";
 }
