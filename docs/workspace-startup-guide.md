@@ -78,26 +78,32 @@ A template lives in the NixOS config repo:
 cp /etc/nixos/mixtape/jcard.toml ./jcard.toml
 ```
 
-Key fields to fill in:
+Edit these fields (schema ref: https://stereos.ai/reference/jcard-schema/):
 ```toml
-[mixtape]
-image = "agent-workbench:latest"
+mixtape = "opencode-mixtape:latest"
 
-[resources]
-cpus   = 4
-memory = "8G"
-disk   = "20G"
-
-[network]
-mode = "bridged"   # or "isolated" for air-gapped agents
-
-[[mounts]]
+# workspace mount (read/write)
+[[shared]]
 host  = "/home/goya/workspaces/<project>"
 guest = "/workspace"
 
-[secrets]
-ANTHROPIC_API_KEY = { env = "ANTHROPIC_API_KEY" }
-GEMINI_API_KEY    = { env = "GEMINI_API_KEY" }
+# agent configs mount (read-only — provision.sh lives here)
+[[shared]]
+host     = "/home/goya/agent-configs"
+guest    = "/agent-configs"
+readonly = true
+
+[[agents]]
+name    = "<project>"
+harness = "claude-code"
+type    = "sandboxed"
+workdir = "/workspace"
+restart = "no"
+extra_packages = ["bun", "ast-grep", "jq", "ripgrep", "fd"]
+
+[agents.env]
+ANTHROPIC_API_KEY = "${ANTHROPIC_API_KEY}"
+GEMINI_API_KEY    = "${GEMINI_API_KEY}"
 ```
 
 ---
