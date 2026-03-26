@@ -56,10 +56,6 @@
   # Add your user to the wireshark group: users.users.you.extraGroups = [ "wireshark" ]
   programs.wireshark.enable = true;
 
-  # ADB — installs android-udev-rules, creates the adbusers group, and puts adb
-  # in PATH. Without this, ADB sees the device but can't open the USB interface.
-  # User must also be in adbusers group (see common.nix).
-  programs.adb.enable = true;
 
   environment.systemPackages = with pkgs; [
 
@@ -67,6 +63,11 @@
     nmap           # port scanning and network discovery
     wireshark
     tshark
+
+    # ── Android / ADB ─────────────────────────────────────────────────────
+    # programs.adb was removed; systemd 258+ handles uaccess rules automatically.
+    # android-tools provides adb, fastboot, etc. No extra group needed.
+    android-tools
 
     # ── Rust toolchain (system-wide stable) ───────────────────────────────
     # rust-bin comes from the rust-overlay flake injected in flake.nix.
