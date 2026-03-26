@@ -56,6 +56,11 @@
   # Add your user to the wireshark group: users.users.you.extraGroups = [ "wireshark" ]
   programs.wireshark.enable = true;
 
+  # ADB — installs android-udev-rules, creates the adbusers group, and puts adb
+  # in PATH. Without this, ADB sees the device but can't open the USB interface.
+  # User must also be in adbusers group (see common.nix).
+  programs.adb.enable = true;
+
   environment.systemPackages = with pkgs; [
 
     # ── Network analysis ──────────────────────────────────────────────────
