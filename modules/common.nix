@@ -121,6 +121,7 @@
       "kvm"          # KVM access for masterblaster
       "libvirtd"
       "docker"
+      "adbusers"     # Android Debug Bridge — USB device access (programs.adb.enable in dev-tooling.nix)
     ];
     shell = pkgs.bash;
   };
