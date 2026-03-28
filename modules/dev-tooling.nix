@@ -59,6 +59,9 @@
 
   environment.systemPackages = with pkgs; [
 
+    # ── Data / shell utilities ────────────────────────────────────────────
+    jq             # JSON processor — used by home.activation MCP/plugin scripts
+
     # ── Network analysis ──────────────────────────────────────────────────
     nmap           # port scanning and network discovery
     wireshark
