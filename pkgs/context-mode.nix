@@ -17,7 +17,7 @@ stdenv.mkDerivation {
     owner = "mksglu";
     repo  = "context-mode";
     rev   = "316e0de2c11d166246dea83f787472236eb57207"; # v1.0.53
-    hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # refill: nix build .#context-mode 2>&1 | grep "got:"
+    hash  = "sha256-L1KF5mNYNZTltxBvTLKU8+7M7RBqpe9HUvvKnuBiJDE=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
