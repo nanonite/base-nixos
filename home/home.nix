@@ -280,12 +280,6 @@
     JQ="${pkgs.jq}/bin/jq"
 
     if [ -f "$CLAUDE_JSON" ]; then
-      # axon — recursive LM reasoning engine (picks up ANTHROPIC_API_KEY automatically)
-      if ! $JQ -e '.mcpServers.axon' "$CLAUDE_JSON" > /dev/null 2>&1; then
-        $JQ '.mcpServers.axon = {"command": "${pkgs.axon}/bin/axon", "args": ["serve"]}' \
-          "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
-      fi
-
       # tilth — code intelligence (keeps nix store path current after each rebuild)
       if ! $JQ -e '.mcpServers.tilth' "$CLAUDE_JSON" > /dev/null 2>&1; then
         $JQ '.mcpServers.tilth = {"command": "${pkgs.tilth}/bin/tilth", "args": ["--mcp"]}' \
