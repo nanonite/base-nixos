@@ -65,9 +65,6 @@
         # kaish — constrained agent shell (agent-safe, structured I/O)
         # pkgs.kaish
 
-        # axon — recursive LM self-reflection engine
-        pkgs.axon
-
         # context-mode — context window manager (per-agent + planner preambles)
         pkgs."context-mode"
 
