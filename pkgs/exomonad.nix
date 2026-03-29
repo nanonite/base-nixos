@@ -22,13 +22,13 @@ rustPlatform.buildRustPackage {
     owner = "tidepool-heavy-industries";
     repo  = "exomonad";
     rev   = "cb47b67464d0ea779acf2e1d6f79f82a72a355c5";
-    hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash  = "sha256-VReVtxB9R8ClY2jhu9WQswBoeSS1I0MOS6peZOcSBwA=";
   };
 
   nativeBuildInputs = [ pkg-config protobuf ];
   buildInputs       = [ openssl ];
 
-  cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  cargoHash = "sha256-09D4PCB5ZjDTNFPZm6JvWNdv/AQjurWp8MRiijVSmuA=";
 
   cargoBuildFlags = [ "-p" "exomonad" ];
   cargoTestFlags  = [ "-p" "exomonad" ];
