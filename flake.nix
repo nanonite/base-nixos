@@ -111,7 +111,6 @@
         masterblaster
         tilth
         kaish
-        axon
         chainlink
         exomonad
         exomonadWasm;

@@ -27,9 +27,6 @@ final: prev: {
   # kaish — constrained agent shell (Rust)
   kaish = final.callPackage ./kaish.nix {};
 
-  # axon — recursive LM self-reflection engine (Rust)
-  axon = final.callPackage ./axon.nix {};
-
   # tracey — REMOVED: requires two-phase build (Vite dashboard via include_str!) +
   # pnpm offline tarball errors. Not currently used.
 

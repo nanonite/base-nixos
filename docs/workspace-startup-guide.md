@@ -5,7 +5,7 @@
 All agent tools are installed system-wide on the Framework laptop.
 This guide covers how to wire them together from a fresh `git clone` through active task delegation.
 
-The stack: **chainlink** (task DB) → **exomonad** (orchestrator/MCP) → **masterblaster** (sandbox VM) → agents running inside mixtape with **axon** (deep reasoning), **tilth** (code nav), **context-mode** (context indexer).
+The stack: **chainlink** (task DB) → **exomonad** (orchestrator/MCP) → **masterblaster** (sandbox VM) → agents running inside mixtape with **tilth** (code nav), **context-mode** (context indexer).
 
 ---
 
@@ -16,7 +16,6 @@ The stack: **chainlink** (task DB) → **exomonad** (orchestrator/MCP) → **mas
 | `chainlink` | Local SQLite issue tracker (lives in workspace) | `chainlink create`, `chainlink session start` |
 | `mb` | Sandbox lifecycle (pull image, launch VM, SSH) | `mb pull`, `mb up`, `mb ssh` |
 | `exomonad` | MCP orchestrator — exposes `fork_wave`, `spawn_gemini`, etc. to Opus planner | `exomonad init` |
-| `axon` | Recursive reasoning engine (MCP or CLI) | `axon serve`, `axon query` |
 | `context-mode` | Context window indexer — FTS5 over files/git/tasks | MCP server, `ctx stats` |
 | `tilth` | AST-aware code search/read (MCP) | `tilth_search`, `tilth_read` via MCP |
 | `go-jira` | Sync to external JIRA (optional) | `jira issue list` |
@@ -135,7 +134,7 @@ tmux attach -t exomonad   # or whatever name it picks
 mb up --config jcard.toml      # starts VM from base image
 mb status                       # confirm sandbox is running
 
-# First launch only — installs axon, tilth, context-mode, chainlink
+# First launch only — installs tilth, context-mode, chainlink
 mb ssh -- bash /nix-workspace/mixtape/provision.sh
 
 mb ssh                          # shell in to verify
@@ -163,11 +162,6 @@ The planner now has access to:
 - `spawn_gemini` — deploy Gemini agents
 - `file_pr` / `merge_pr` — PR management
 - `notify_parent` — signal back to parent agent
-
-Axon (deep reasoning) can be added as an MCP server too:
-```bash
-axon serve   # exposes recursive reasoning to Claude via MCP
-```
 
 ---
 
