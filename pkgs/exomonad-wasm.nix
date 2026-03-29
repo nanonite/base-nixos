@@ -14,13 +14,13 @@
 
 stdenv.mkDerivation {
   pname   = "exomonad-wasm";
-  version = "unstable-2026-01-15";
+  version = "unstable-2026-03-28";
 
   src = fetchFromGitHub {
     owner = "tidepool-heavy-industries";
     repo  = "exomonad";
-    rev   = "5dfab102fe65d5d1d57d54651c000b6de1336e70";
-    hash  = "sha256-ILK9PEjJYvVq2IpnWsRFhOIkncEoOgobN7cA/an29kk=";
+    rev   = "cb47b67464d0ea779acf2e1d6f79f82a72a355c5";
+    hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
 
   nativeBuildInputs = [ wasmToolchain wizer cacert curl ];
@@ -33,7 +33,7 @@ stdenv.mkDerivation {
   # Run `nix build .#exomonad-wasm` with a placeholder hash to get the real one.
   outputHashMode = "recursive";
   outputHashAlgo = "sha256";
-  outputHash     = "sha256-k/xAwye4oJcYMSAo6dEib46VyoNt0FVeYNU308XQAeg=";
+  outputHash     = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
   postPatch = ''
     # Remove developer-local external role paths (not present outside author's machine)
