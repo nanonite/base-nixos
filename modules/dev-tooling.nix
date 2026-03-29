@@ -56,6 +56,11 @@
   # Add your user to the wireshark group: users.users.you.extraGroups = [ "wireshark" ]
   programs.wireshark.enable = true;
 
+  # nix-ld — FHS compatibility shim so dynamically-linked binaries work.
+  # Required for VS Code Remote SSH: the server it downloads expects
+  # /lib/ld-linux-x86-64.so.2, which NixOS doesn't provide at that path.
+  programs.nix-ld.enable = true;
+
 
   environment.systemPackages = with pkgs; [
 
