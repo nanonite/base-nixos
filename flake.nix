@@ -120,7 +120,9 @@
         exomonad
         exomonadWasm;
       inherit (pkgs) context-mode;
-      opencode = opencode.packages.${system}.opencode;
+      opencode = (opencode.packages.${system}.opencode).override {
+        inherit (pkgs) bun;
+      };
     };
 
     nixosConfigurations = {
