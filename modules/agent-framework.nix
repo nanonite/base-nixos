@@ -53,10 +53,13 @@
         #   2. Fill hashes in pkgs/<tool>.nix
         #   3. Uncomment the line below
         #
-        # masterblaster (mb) — stereOS AI agent sandbox manager
-        pkgs.masterblaster
-
-        # tilth — code intelligence MCP server
+        # tilth — code intelligence MCP server (AST-aware symbol search, file read)
+        # Registered globally in ~/.claude.json (home.nix activation).
+        # For spawned agents: add to each project's .exo/config.toml:
+        #   [extra_mcp_servers.tilth]
+        #   type    = "stdio"
+        #   command = "tilth"
+        #   args    = ["--mcp"]
         pkgs.tilth
 
         # tracey — structured observability for agent runs
@@ -66,14 +69,23 @@
         # pkgs.kaish
 
         # context-mode — context window manager (per-agent + planner preambles)
+        # NOTE: context-mode hooks conflict with exomonad hooks. Disable/unload
+        # context-mode before running exomonad init in a project session.
         pkgs."context-mode"
 
-        # chainlink — composes multiple MCP servers into a unified tool surface
-        # Config: home/home.nix (chainlink stanza) and per-agent jcard toml
+        # chainlink — CLI issue tracker with MCP tools (issues, sub-issues, milestones)
+        # Planner stage writes tasks here; exomonad agents consume via chainlink MCP tools.
+        # Hook conflict: chainlink Claude Code hooks conflict with exomonad hooks — keep
+        # chainlink hooks disabled; use exomonad hooks when in an exomonad session.
         pkgs.chainlink
 
-        # exomonad — routes tasks from Opus planner to agent sandboxes
-        # Config: planner/exomonad.toml
+        # exomonad — agent orchestration (Rust binary + Haskell WASM plugins)
+        # Extra tools for agents go in per-project .exo/config.toml, not here.
+        # Grafana Tempo observability companion example:
+        #   [[companions]]
+        #   name         = "tempo"
+        #   agent_type   = "process"
+        #   command      = "docker compose -f .exo/otel/docker-compose.yml up"
         pkgs.exomonad
 
         # ── Not binary tools — installed differently ─────────────────────────────
