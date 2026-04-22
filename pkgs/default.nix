@@ -19,6 +19,8 @@
 final: prev: {
 
   # masterblaster (mb) — stereOS AI agent sandbox manager (Go)
+  # REMOVED from active config: no x86_64 binary available upstream.
+  # Kept here for hash-filling workflow if/when x86 support lands.
   masterblaster = final.callPackage ./masterblaster.nix {};
 
   # tilth — code intelligence MCP server (Rust, crates.io)
@@ -30,7 +32,8 @@ final: prev: {
   # tracey — REMOVED: requires two-phase build (Vite dashboard via include_str!) +
   # pnpm offline tarball errors. Not currently used.
 
-  # chainlink — MCP server composition (Rust, chainlink/ subdir)
+  # chainlink — CLI issue tracker + MCP server (issues, sub-issues, milestones, labels)
+  # SQLite at .chainlink/issues.db — planner stage writes here, exomonad agents read/update
   chainlink = final.callPackage ./chainlink.nix {};
 
   # exomonad-wasm — Haskell WASM plugins (FOD, built with GHC 9.12 wasm32-wasi)
