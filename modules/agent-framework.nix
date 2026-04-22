@@ -88,6 +88,9 @@
         #   command      = "docker compose -f .exo/otel/docker-compose.yml up"
         pkgs.exomonad
 
+        # opencode — AI coding agent (TypeScript, anomalyco)
+        pkgs.opencode
+
         # ── Not binary tools — installed differently ─────────────────────────────
         # learning-opportunities — Claude Code plugin:
         #   claude plugin marketplace add https://github.com/DrCatHicks/learning-opportunities.git

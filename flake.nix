@@ -40,6 +40,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # opencode — AI coding agent (TypeScript, anomalyco)
+    opencode = {
+      url = "github:anomalyco/opencode/v1.14.20";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # ── Agent Framework ─────────────────────────────────────────────────────────
     # All agent tools lack Nix flake outputs — built via custom derivations in pkgs/.
     # See pkgs/default.nix for the full list and build status.
@@ -48,7 +54,7 @@
 
   outputs = {
     self, nixpkgs, nixos-hardware, home-manager, niri, dms, masterblaster, rust-overlay,
-    ghc-wasm-meta,
+    ghc-wasm-meta, opencode,
     ...
   }@inputs:
   let
@@ -74,6 +80,7 @@
           ({ inputs, ... }: { nixpkgs.overlays = [
             rust-overlay.overlays.default
             (import ./pkgs/default.nix { inherit (inputs) ghc-wasm-meta; })
+            opencode.overlays.default
           ]; })
 
           # Core shared config (bootloader, Nix GC, btrfs, audio, portals, users)
@@ -115,6 +122,7 @@
         exomonad
         exomonadWasm;
       inherit (pkgs) context-mode;
+      opencode = opencode.packages.${system}.opencode;
     };
 
     nixosConfigurations = {
