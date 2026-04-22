@@ -1,5 +1,5 @@
 # exomonad — task orchestration router (Opus planner → agent sandboxes)
-# Source: github:tidepool-heavy-industries/exomonad (Rust + Haskell WASM)
+# Source: github:nanonite/exomonad (Rust + Haskell WASM)
 #
 # Two-phase build:
 #   exomonadWasm (pkgs/exomonad-wasm.nix) — Haskell roles compiled to wasm32-wasi
@@ -16,19 +16,19 @@
 
 rustPlatform.buildRustPackage {
   pname   = "exomonad";
-  version = "unstable-2026-03-28";
+  version = "unstable-2026-04-22";
 
   src = fetchFromGitHub {
-    owner = "tidepool-heavy-industries";
+    owner = "nanonite";
     repo  = "exomonad";
-    rev   = "cb47b67464d0ea779acf2e1d6f79f82a72a355c5";
-    hash  = "sha256-VReVtxB9R8ClY2jhu9WQswBoeSS1I0MOS6peZOcSBwA=";
+    rev   = "53ba3ed5d56a1339e3ca92f932bfd470bb836ac4";
+    hash  = "";
   };
 
   nativeBuildInputs = [ pkg-config protobuf ];
   buildInputs       = [ openssl ];
 
-  cargoHash = "sha256-09D4PCB5ZjDTNFPZm6JvWNdv/AQjurWp8MRiijVSmuA=";
+  cargoHash = "";
 
   cargoBuildFlags = [ "-p" "exomonad" ];
   cargoTestFlags  = [ "-p" "exomonad" ];

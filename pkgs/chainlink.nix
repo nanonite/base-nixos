@@ -1,5 +1,5 @@
 # chainlink — composes multiple MCP servers into a unified agent tool surface
-# Source: github:dollspace-gay/chainlink (Rust crate at chainlink/ subdir)
+# Source: github:nanonite/chainlink (Rust crate at chainlink/ subdir)
 #
 # Fill in hashes:
 #   nix build .#chainlink 2>&1 | grep "got:"
@@ -8,17 +8,17 @@
 
 rustPlatform.buildRustPackage {
   pname   = "chainlink";
-  version = "unstable-2026-01-15";
+  version = "unstable-2026-04-10";
 
   src = fetchFromGitHub {
-    owner = "dollspace-gay";
+    owner = "nanonite";
     repo  = "chainlink";
-    rev   = "ab49ee11eb4d2539d7cfd6acae17eed9242c786b";
-    hash  = "sha256-DAex8EFzEh1+kQv6384aITRkyiHRsfTElEoJHexDxfA=";
+    rev   = "d2a134479a5657f281279f852c68863895c000fa";
+    hash  = "";
   };
 
   # Rust crate lives in the chainlink/ subdirectory of the repo
   sourceRoot = "source/chainlink";
 
-  cargoHash = "sha256-YKkD0RjYRMkjoLhjsydv9HF+AuAAI+4Fqe6zx8NWZRA=";
+  cargoHash = "";
 }
