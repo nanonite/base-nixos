@@ -123,7 +123,7 @@
         exomonadWasm;
       inherit (pkgs) context-mode;
       opencode = (opencode.packages.${system}.opencode).override {
-        inherit (pkgs) bun;
+        bun = pkgs.bun;
       };
     };
 
