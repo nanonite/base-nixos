@@ -19,7 +19,7 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "nanonite";
     repo  = "exomonad";
-    rev   = "53ba3ed5d56a1339e3ca92f932bfd470bb836ac4";
+    rev   = "ca33d5d53bed7e276ebe55249ee6c9cd79b0cd66";
     hash  = "";
   };
 
