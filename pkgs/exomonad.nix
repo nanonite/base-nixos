@@ -22,13 +22,13 @@ rustPlatform.buildRustPackage {
     owner = "nanonite";
     repo  = "exomonad";
     rev   = "ca33d5d53bed7e276ebe55249ee6c9cd79b0cd66";
-    hash  = "";
+    hash  = "sha256-8wSunqJdO82fLyX3Suue76XyqymEv+J9EE071XYB2T0=";
   };
 
   nativeBuildInputs = [ pkg-config protobuf ];
   buildInputs       = [ openssl ];
 
-  cargoHash = "";
+  cargoHash = "sha256-e6LL6079wxvRiw98n2/pE55GO72EcqXDXz3VkdmbK70=";
 
   cargoBuildFlags = [ "-p" "exomonad" ];
   cargoTestFlags  = [ "-p" "exomonad" ];
