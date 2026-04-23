@@ -67,6 +67,22 @@
         rust-overlay.overlays.default
         (import ./pkgs/default.nix { inherit ghc-wasm-meta; }));
 
+    # generate.ts (dev-only) dynamically imports prettier, which isn't in the
+    # vendor hash. Stub it so bun can bundle the single-binary CLI.
+    stubPrettierPrior = ''
+      for dir in node_modules/prettier packages/opencode/node_modules/prettier; do
+        mkdir -p "$dir/plugins"
+        printf 'export const format = async s => s;\nexport default { format: async s => s };\n' > "$dir/index.js"
+        cp "$dir/index.js" "$dir/index.mjs"
+        printf '{"name":"prettier","version":"3.0.0","type":"module","main":"index.js","module":"index.mjs"}\n' > "$dir/package.json"
+        printf 'export default {};\n' > "$dir/plugins/babel.js"
+        printf 'export default {};\n' > "$dir/plugins/estree.js"
+      done
+    '';
+    patchOpencode = pkg: pkg.overrideAttrs (old: {
+      preBuild = stubPrettierPrior + (old.preBuild or "");
+    });
+
     # Helper to build a NixOS system config — keeps outputs block clean.
     # withNiri: set false for headless hosts (embedded) that don't run a compositor.
     mkSystem = { hostname, system ? "x86_64-linux", extraModules ? [], withNiri ? true }:
@@ -80,7 +96,9 @@
           ({ inputs, ... }: { nixpkgs.overlays = [
             rust-overlay.overlays.default
             (import ./pkgs/default.nix { inherit (inputs) ghc-wasm-meta; })
-            opencode.overlays.default
+            (final: prev:
+              let base = opencode.overlays.default final prev; in
+              base // { opencode = patchOpencode base.opencode; })
           ]; })
 
           # Core shared config (bootloader, Nix GC, btrfs, audio, portals, users)
@@ -120,7 +138,7 @@
         exomonad
         exomonadWasm;
       inherit (pkgs) context-mode;
-      opencode = opencode.packages.${system}.opencode;
+      opencode = patchOpencode opencode.packages.${system}.opencode;
     };
 
     nixosConfigurations = {
