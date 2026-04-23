@@ -20,7 +20,7 @@ stdenv.mkDerivation {
     owner = "nanonite";
     repo  = "exomonad";
     rev   = "bd29bcd777e8ba2299d2d0e35b7527b0d0e0a732";
-    hash  = "";
+    hash  = "sha256-QuaNAHl3L2khD6Rlrh84ykPH1VUYmzaoaySohzYpL/c=";
   };
 
   nativeBuildInputs = [ wasmToolchain wizer cacert curl ];
