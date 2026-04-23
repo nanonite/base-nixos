@@ -70,6 +70,7 @@
     # generate.ts (dev-only) dynamically imports prettier, which isn't in the
     # vendor hash. Stub it so bun can bundle the single-binary CLI.
     stubPrettierPrior = ''
+      chmod u+w node_modules/ packages/opencode/node_modules/ 2>/dev/null || true
       for dir in node_modules/prettier packages/opencode/node_modules/prettier; do
         mkdir -p "$dir/plugins"
         printf 'export const format = async s => s;\nexport default { format: async s => s };\n' > "$dir/index.js"
