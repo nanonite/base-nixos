@@ -120,12 +120,7 @@
         exomonad
         exomonadWasm;
       inherit (pkgs) context-mode;
-      opencode = (opencode.packages.${system}.opencode).overrideAttrs (old: {
-        preBuild = ''
-          # Relax bun version check — nixpkgs has 1.3.10, script wants ^1.3.11
-          sed -i 's/1\.3\.11/1.3.10/' packages/script/src/index.ts
-        '' + (old.preBuild or "");
-      });
+      opencode = opencode.packages.${system}.opencode;
     };
 
     nixosConfigurations = {
