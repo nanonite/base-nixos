@@ -14,13 +14,13 @@
 
 stdenv.mkDerivation {
   pname   = "exomonad-wasm";
-  version = "unstable-2026-04-03";
+  version = "unstable-2026-04-22";
 
   src = fetchFromGitHub {
     owner = "nanonite";
     repo  = "exomonad";
-    rev   = "bd29bcd777e8ba2299d2d0e35b7527b0d0e0a732";
-    hash  = "sha256-QuaNAHl3L2khD6Rlrh84ykPH1VUYmzaoaySohzYpL/c=";
+    rev   = "53ba3ed5d56a1339e3ca92f932bfd470bb836ac4";
+    hash  = "";
   };
 
   nativeBuildInputs = [ wasmToolchain wizer cacert curl ];
