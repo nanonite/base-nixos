@@ -16,8 +16,14 @@
     defaultSopsFile = ../secrets.yaml;
     age.keyFile = "/etc/sops/age/keys.txt";
     secrets = {
-      openrouter_api_key = {};
-      opencode_api_key = {};
+      openrouter_api_key = {
+        owner = "framework";
+        mode = "0400";
+      };
+      opencode_api_key = {
+        owner = "framework";
+        mode = "0400";
+      };
     };
   };
 
