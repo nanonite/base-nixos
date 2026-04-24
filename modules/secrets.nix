@@ -1,9 +1,10 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 
 # ── secrets.nix — encrypted secrets via sops-nix ──────────────────────────────
 #
 # Decrypts secrets.yaml at boot into /run/secrets/ using an age keypair.
-# Secrets are exported as environment variables via environment.extraInit.
+# A systemd user service injects the secrets into the user session environment
+# so GUI apps (launched via niri, not a login shell) see them too.
 #
 # Setup (one-time, on the target machine):
 #   1. mkdir -p /etc/sops/age
@@ -27,9 +28,36 @@
     };
   };
 
-  # Export decrypted secrets as environment variables on every shell login.
-  environment.extraInit = ''
-    [ -f /run/secrets/openrouter_api_key ] && export OPENROUTER_API_KEY=$(cat /run/secrets/openrouter_api_key)
-    [ -f /run/secrets/opencode_api_key ] && export OPENCODE_API_KEY=$(cat /run/secrets/opencode_api_key)
-  '';
+  # Inject OPENROUTER_API_KEY into the systemd user session (used by sandbox
+  # configs in agent-sandbox/ and picked up by any terminal child process).
+  systemd.user.services.sops-env = {
+    description = "Import sops secrets into the systemd user environment";
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "sops-env-import" ''
+        ${pkgs.systemd}/bin/systemctl --user set-environment \
+          OPENROUTER_API_KEY=$(cat /run/secrets/openrouter_api_key)
+      '';
+    };
+  };
+
+  # Write the opencode Go API key directly into auth.json so opencode picks it
+  # up on every launch without needing any environment variable or manual /connect.
+  systemd.user.services.opencode-auth = {
+    description = "Write opencode Go API key to auth.json";
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "write-opencode-auth" ''
+        mkdir -p "$HOME/.local/share/opencode"
+        KEY=$(cat /run/secrets/opencode_api_key)
+        printf '{"opencode-go":{"type":"api","key":"%s"}}\n' "$KEY" \
+          > "$HOME/.local/share/opencode/auth.json"
+        chmod 600 "$HOME/.local/share/opencode/auth.json"
+      '';
+    };
+  };
 }
