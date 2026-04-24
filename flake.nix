@@ -46,6 +46,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # sops-nix — encrypted secrets management
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # ── Agent Framework ─────────────────────────────────────────────────────────
     # All agent tools lack Nix flake outputs — built via custom derivations in pkgs/.
     # See pkgs/default.nix for the full list and build status.
@@ -54,7 +60,7 @@
 
   outputs = {
     self, nixpkgs, nixos-hardware, home-manager, niri, dms, masterblaster, rust-overlay,
-    ghc-wasm-meta, opencode,
+    ghc-wasm-meta, opencode, sops-nix,
     ...
   }@inputs:
   let
@@ -107,6 +113,10 @@
 
           # Agentic coding framework (orchestration, JIRA CLI, benchmark toggle)
           ./modules/agent-framework.nix
+
+          # Encrypted secrets management (sops-nix)
+          sops-nix.nixosModules.sops
+          ./modules/secrets.nix
 
           # Host-specific config (hardware, hostname, compositor, etc.)
           ./hosts/${hostname}/configuration.nix
