@@ -66,6 +66,7 @@
 
     # ── Data / shell utilities ────────────────────────────────────────────
     jq             # JSON processor — used by home.activation MCP/plugin scripts
+    just           # command runner (Makefile alternative)
 
     # ── Network analysis ──────────────────────────────────────────────────
     nmap           # port scanning and network discovery
