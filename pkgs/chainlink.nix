@@ -8,17 +8,17 @@
 
 rustPlatform.buildRustPackage {
   pname   = "chainlink";
-  version = "unstable-2026-04-10";
+  version = "unstable-2026-04-29";
 
   src = fetchFromGitHub {
     owner = "nanonite";
     repo  = "chainlink";
-    rev   = "d2a134479a5657f281279f852c68863895c000fa";
-    hash  = "sha256-YKVxvWe5bkthI+StmUvtB+KlKGW7CO9kStIYrSHQjMs=";
+    rev   = "9ce9928feb3de014cd79e106aa4090b7320c12ad";
+    hash  = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
 
   # Rust crate lives in the chainlink/ subdirectory of the repo
   sourceRoot = "source/chainlink";
 
-  cargoHash = "sha256-YKkD0RjYRMkjoLhjsydv9HF+AuAAI+4Fqe6zx8NWZRA=";
+  cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 }
