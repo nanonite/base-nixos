@@ -269,18 +269,17 @@
   # ── Claude Code global MCP servers ────────────────────────────────────────
   # Registers agent tools globally in ~/.claude.json so every Claude Code
   # session (planner + all fork_wave spawned agents) has them available.
-  # Runs after each nixos-rebuild; idempotent — only adds if not present.
+  # Runs after each nixos-rebuild. tilth path is always overwritten because the
+  # nix store hash changes on rebuild — a stale path silently breaks the MCP server.
   # ~/.claude.json must already exist (created on first `claude` launch).
   home.activation.claudeMcpServers = lib.hm.dag.entryAfter ["writeBoundary"] ''
     CLAUDE_JSON="$HOME/.claude.json"
     JQ="${pkgs.jq}/bin/jq"
 
     if [ -f "$CLAUDE_JSON" ]; then
-      # tilth — code intelligence (keeps nix store path current after each rebuild)
-      if ! $JQ -e '.mcpServers.tilth' "$CLAUDE_JSON" > /dev/null 2>&1; then
-        $JQ '.mcpServers.tilth = {"command": "${pkgs.tilth}/bin/tilth", "args": ["--mcp"]}' \
-          "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
-      fi
+      # Always overwrite — store hash changes on every rebuild, stale path = silent failure
+      $JQ '.mcpServers.tilth = {"command": "${pkgs.tilth}/bin/tilth", "args": ["--mcp"]}' \
+        "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
     fi
   '';
 
@@ -362,6 +361,11 @@
     # Wayland utilities
     wl-clipboard
     wev          # Wayland event viewer (useful for finding key names for niri)
+    grimblast    # screenshot helper (wraps grim+slurp, auto-names files)
+
+    # Image & document viewers
+    imv          # lightweight Wayland image viewer
+    evince       # PDF viewer
 
     # Creative
     blender
@@ -369,6 +373,21 @@
     # Text editor
     emacs
   ];
+
+  # ── Screenshot desktop entry (shows in fuzzel app list) ──────────────────
+  xdg.desktopEntries."screenshot" = {
+    name       = "Screenshot";
+    exec       = "grimblast save area";
+    icon       = "applets-screenshooter";
+    categories = [ "Graphics" "Utility" ];
+    terminal   = false;
+    comment    = "Select a region and save screenshot to ~/Pictures";
+  };
+
+  # ── niri extra keybinds ────────────────────────────────────────────────────
+  programs.niri.settings.binds = {
+    "Print".action.spawn = [ "grimblast" "save" "area" ];
+  };
 
   # ── VSCode ────────────────────────────────────────────────────────────────
   programs.vscode = {
