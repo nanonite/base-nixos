@@ -375,18 +375,11 @@
   ];
 
   # ── Screenshot desktop entry (shows in fuzzel app list) ──────────────────
-  xdg.desktopEntries."screenshot" = {
-    name       = "Screenshot";
-    exec       = "grimblast save area";
-    icon       = "applets-screenshooter";
-    categories = [ "Graphics" "Utility" ];
-    terminal   = false;
-    comment    = "Select a region and save screenshot to ~/Pictures";
-  };
+
 
   # ── niri extra keybinds ────────────────────────────────────────────────────
   programs.niri.settings.binds = {
-    "Print".action.spawn = [ "grimblast" "save" "area" ];
+    "Print".action.spawn = [ "sh" "-c" "mkdir -p ~/ Pictures && grim -g \"$(slurp)\" ~/Pictures/$(date +%Y%m%d_%H%M%S).png" ];
   };
 
   # ── VSCode ────────────────────────────────────────────────────────────────
