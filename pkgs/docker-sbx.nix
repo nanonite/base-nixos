@@ -3,6 +3,8 @@
   fetchurl,
   dpkg,
   autoPatchelfHook,
+  makeWrapper,
+  e2fsprogs,
   lz4,
   zlib,
   zstd,
@@ -20,6 +22,7 @@ stdenv.mkDerivation {
   nativeBuildInputs = [
     dpkg
     autoPatchelfHook
+    makeWrapper
   ];
 
   buildInputs = [
@@ -46,6 +49,9 @@ stdenv.mkDerivation {
       $out/etc/apparmor.d/docker-sbx-nerdbox-shim \
       --replace-fail /usr/libexec/containerd-shim-nerdbox-v1 \
         $out/libexec/containerd-shim-nerdbox-v1
+
+    wrapProgram $out/bin/sbx \
+      --prefix PATH : ${e2fsprogs}/bin
 
     runHook postInstall
   '';
