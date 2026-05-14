@@ -25,6 +25,11 @@
         owner = "framework";
         mode = "0400";
       };
+    } // lib.optionalAttrs config.agentFramework.codexAuth.enable {
+      codex_auth_json = {
+        owner = "framework";
+        mode = "0400";
+      };
     };
   };
 
@@ -57,6 +62,28 @@
         printf '{"opencode-go":{"type":"api","key":"%s"}}\n' "$KEY" \
           > "$HOME/.local/share/opencode/auth.json"
         chmod 600 "$HOME/.local/share/opencode/auth.json"
+      '';
+    };
+  };
+
+  # Codex web sign-in stores OAuth-style session material in ~/.codex/auth.json.
+  # Do not try to derive an API key from it; replicate the whole auth JSON as a
+  # sops secret named codex_auth_json when you want a fresh machine to inherit it.
+  systemd.user.services.codex-auth = lib.mkIf config.agentFramework.codexAuth.enable {
+    description = "Write Codex auth.json from sops when available";
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "write-codex-auth" ''
+        SECRET=/run/secrets/codex_auth_json
+        if [ ! -s "$SECRET" ]; then
+          exit 0
+        fi
+
+        mkdir -p "$HOME/.codex"
+        cp "$SECRET" "$HOME/.codex/auth.json"
+        chmod 600 "$HOME/.codex/auth.json"
       '';
     };
   };

@@ -3,7 +3,7 @@
 
   inputs = {
     # ── Core NixOS ─────────────────────────────────────────────────────────────
-    nixpkgs.url        = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
     home-manager = {
@@ -58,145 +58,176 @@
     # crosslink is a library-only Cargo dependency — no binary derivation needed.
   };
 
-  outputs = {
-    self, nixpkgs, nixos-hardware, home-manager, niri, dms, masterblaster, rust-overlay,
-    ghc-wasm-meta, opencode, sops-nix,
-    ...
-  }@inputs:
-  let
-    system = "x86_64-linux";
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nixos-hardware,
+      home-manager,
+      niri,
+      dms,
+      masterblaster,
+      rust-overlay,
+      ghc-wasm-meta,
+      opencode,
+      sops-nix,
+      ...
+    }@inputs:
+    let
+      system = "x86_64-linux";
 
-    # nixpkgs with both overlays applied — used for exposing pkgs/ tools as
-    # first-class flake outputs so `nix build .#<tool>` works for hash-filling.
-    pkgs = nixpkgs.legacyPackages.${system}.extend
-      (nixpkgs.lib.composeExtensions
-        rust-overlay.overlays.default
-        (import ./pkgs/default.nix { inherit ghc-wasm-meta; }));
+      # nixpkgs with both overlays applied — used for exposing pkgs/ tools as
+      # first-class flake outputs so `nix build .#<tool>` works for hash-filling.
+      pkgs = nixpkgs.legacyPackages.${system}.extend (
+        nixpkgs.lib.composeExtensions rust-overlay.overlays.default (
+          import ./pkgs/default.nix { inherit ghc-wasm-meta; }
+        )
+      );
 
-    # generate.ts (dev-only) dynamically imports prettier, which isn't in the
-    # vendor hash. Stub it so bun can bundle the single-binary CLI.
-    stubPrettierPrior = ''
-      chmod u+w node_modules/ packages/opencode/node_modules/ 2>/dev/null || true
-      for dir in node_modules/prettier packages/opencode/node_modules/prettier; do
-        mkdir -p "$dir/plugins"
-        printf 'export const format = async s => s;\nexport default { format: async s => s };\n' > "$dir/index.js"
-        cp "$dir/index.js" "$dir/index.mjs"
-        printf '{"name":"prettier","version":"3.0.0","type":"module","main":"index.js","module":"index.mjs"}\n' > "$dir/package.json"
-        printf 'export default {};\n' > "$dir/plugins/babel.js"
-        printf 'export default {};\n' > "$dir/plugins/estree.js"
-      done
-    '';
-    patchOpencode = pkg: pkg.overrideAttrs (old: {
-      preBuild = stubPrettierPrior + (old.preBuild or "");
-    });
+      # generate.ts (dev-only) dynamically imports prettier, which isn't in the
+      # vendor hash. Stub it so bun can bundle the single-binary CLI.
+      stubPrettierPrior = ''
+        chmod u+w node_modules/ packages/opencode/node_modules/ 2>/dev/null || true
+        for dir in node_modules/prettier packages/opencode/node_modules/prettier; do
+          mkdir -p "$dir/plugins"
+          printf 'export const format = async s => s;\nexport default { format: async s => s };\n' > "$dir/index.js"
+          cp "$dir/index.js" "$dir/index.mjs"
+          printf '{"name":"prettier","version":"3.0.0","type":"module","main":"index.js","module":"index.mjs"}\n' > "$dir/package.json"
+          printf 'export default {};\n' > "$dir/plugins/babel.js"
+          printf 'export default {};\n' > "$dir/plugins/estree.js"
+        done
+      '';
+      patchOpencode =
+        pkg:
+        pkg.overrideAttrs (old: {
+          preBuild = stubPrettierPrior + (old.preBuild or "");
+        });
 
-    # Helper to build a NixOS system config — keeps outputs block clean.
-    # withNiri: set false for headless hosts (embedded) that don't run a compositor.
-    mkSystem = { hostname, system ? "x86_64-linux", extraModules ? [], withNiri ? true }:
-      nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit inputs; };
-        modules = [
-          # Inject overlays into nixpkgs:
-          #   rust-overlay  — pkgs.rust-bin.* for declarative Rust toolchain management
-          #   pkgs/default  — custom agent framework tools (added incrementally)
-          ({ inputs, ... }: { nixpkgs.overlays = [
-            rust-overlay.overlays.default
-            (import ./pkgs/default.nix { inherit (inputs) ghc-wasm-meta; })
-            (final: prev:
-              let base = opencode.overlays.default final prev; in
-              base // { opencode = patchOpencode base.opencode; })
-          ]; })
+      # Helper to build a NixOS system config — keeps outputs block clean.
+      # withNiri: set false for headless hosts (embedded) that don't run a compositor.
+      mkSystem =
+        {
+          hostname,
+          system ? "x86_64-linux",
+          extraModules ? [ ],
+          withNiri ? true,
+        }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs; };
+          modules = [
+            # Inject overlays into nixpkgs:
+            #   rust-overlay  — pkgs.rust-bin.* for declarative Rust toolchain management
+            #   pkgs/default  — custom agent framework tools (added incrementally)
+            (
+              { inputs, ... }:
+              {
+                nixpkgs.overlays = [
+                  rust-overlay.overlays.default
+                  (import ./pkgs/default.nix { inherit (inputs) ghc-wasm-meta; })
+                  (
+                    final: prev:
+                    let
+                      base = opencode.overlays.default final prev;
+                    in
+                    base // { opencode = patchOpencode base.opencode; }
+                  )
+                ];
+              }
+            )
 
-          # Core shared config (bootloader, Nix GC, btrfs, audio, portals, users)
-          ./modules/common.nix
+            # Core shared config (bootloader, Nix GC, btrfs, audio, portals, users)
+            ./modules/common.nix
 
-          # Agentic coding framework (orchestration, JIRA CLI, benchmark toggle)
-          ./modules/agent-framework.nix
+            # Agentic coding framework (orchestration, JIRA CLI, benchmark toggle)
+            ./modules/agent-framework.nix
 
-          # Encrypted secrets management (sops-nix)
-          sops-nix.nixosModules.sops
-          ./modules/secrets.nix
+            # Encrypted secrets management (sops-nix)
+            sops-nix.nixosModules.sops
+            ./modules/secrets.nix
 
-          # Host-specific config (hardware, hostname, compositor, etc.)
-          ./hosts/${hostname}/configuration.nix
+            # Host-specific config (hardware, hostname, compositor, etc.)
+            ./hosts/${hostname}/configuration.nix
 
-          # Home Manager — manages user-level config declaratively
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs    = true;   # share system nixpkgs (avoids duplicate downloads)
-              useUserPackages  = true;   # install HM packages into the system profile
-              extraSpecialArgs = { inherit inputs; };
-              users.framework        = import ./home/home.nix; # replace "you" with your username
-            };
-          }
-        ]
-        # niri compositor — included for graphical hosts only , removed because it pins niri to v25.08 which lakcs `include` support
-        ++ extraModules;
+            # Home Manager — manages user-level config declaratively
+            home-manager.nixosModules.home-manager
+            {
+              home-manager = {
+                useGlobalPkgs = true; # share system nixpkgs (avoids duplicate downloads)
+                useUserPackages = true; # install HM packages into the system profile
+                extraSpecialArgs = { inherit inputs; };
+                users.framework = import ./home/home.nix; # replace "you" with your username
+              };
+            }
+          ]
+          # niri compositor — included for graphical hosts only , removed because it pins niri to v25.08 which lakcs `include` support
+          ++ extraModules;
+        };
+    in
+    {
+      # ── Agent tool packages — for hash-filling workflow ────────────────────────
+      # Usage: nix build .#<tool> 2>&1 | grep "got:"
+      # Fill the "got:" hash into pkgs/<tool>.nix, then repeat for cargoHash/vendorHash.
+      packages.${system} = {
+        inherit (pkgs)
+          masterblaster
+          tilth
+          kaish
+          chainlink
+          exomonad
+          exomonadWasm
+          docker-sbx
+          codex
+          ;
+        inherit (pkgs) context-mode;
+        opencode = patchOpencode opencode.packages.${system}.opencode;
       };
-  in
-  {
-    # ── Agent tool packages — for hash-filling workflow ────────────────────────
-    # Usage: nix build .#<tool> 2>&1 | grep "got:"
-    # Fill the "got:" hash into pkgs/<tool>.nix, then repeat for cargoHash/vendorHash.
-    packages.${system} = {
-      inherit (pkgs)
-        masterblaster
-        tilth
-        kaish
-        chainlink
-        exomonad
-        exomonadWasm;
-      inherit (pkgs) context-mode;
-      opencode = patchOpencode opencode.packages.${system}.opencode;
+
+      nixosConfigurations = {
+
+        # ── Framework 13" 11th-gen Intel ──────────────────────────────────────────
+        framework = mkSystem {
+          hostname = "framework";
+          extraModules = [
+            nixos-hardware.nixosModules.framework-11th-gen-intel
+          ];
+        };
+
+        # ── Main Desktop (NVIDIA) ──────────────────────────────────────────────────
+        desktop = mkSystem {
+          hostname = "desktop";
+          extraModules = [
+            ./modules/nvidia.nix
+          ];
+        };
+
+        # ── Raspberry Pi 4 (aarch64) ───────────────────────────────────────────────
+        rpi4 = mkSystem {
+          hostname = "embedded";
+          system = "aarch64-linux";
+          withNiri = false; # headless — no compositor
+          extraModules = [
+            nixos-hardware.nixosModules.raspberry-pi-4
+            ./hosts/embedded/rpi4.nix
+          ];
+        };
+
+        # ── Raspberry Pi 5 — add when ready ───────────────────────────────────────
+        # rpi5 = mkSystem {
+        #   hostname = "embedded";
+        #   system   = "aarch64-linux";
+        #   withNiri = false;
+        #   extraModules = [ ./hosts/embedded/rpi5.nix ];
+        # };
+
+        # ── Future boards ─────────────────────────────────────────────────────────
+        # rock5b = mkSystem {
+        #   hostname = "embedded";
+        #   system   = "aarch64-linux";
+        #   withNiri = false;
+        #   extraModules = [ ./hosts/embedded/rock5b.nix ];
+        # };
+
+      };
     };
-
-    nixosConfigurations = {
-
-      # ── Framework 13" 11th-gen Intel ──────────────────────────────────────────
-      framework = mkSystem {
-        hostname = "framework";
-        extraModules = [
-          nixos-hardware.nixosModules.framework-11th-gen-intel
-        ];
-      };
-
-      # ── Main Desktop (NVIDIA) ──────────────────────────────────────────────────
-      desktop = mkSystem {
-        hostname = "desktop";
-        extraModules = [
-          ./modules/nvidia.nix
-        ];
-      };
-
-      # ── Raspberry Pi 4 (aarch64) ───────────────────────────────────────────────
-      rpi4 = mkSystem {
-        hostname = "embedded";
-        system   = "aarch64-linux";
-        withNiri = false; # headless — no compositor
-        extraModules = [
-          nixos-hardware.nixosModules.raspberry-pi-4
-          ./hosts/embedded/rpi4.nix
-        ];
-      };
-
-      # ── Raspberry Pi 5 — add when ready ───────────────────────────────────────
-      # rpi5 = mkSystem {
-      #   hostname = "embedded";
-      #   system   = "aarch64-linux";
-      #   withNiri = false;
-      #   extraModules = [ ./hosts/embedded/rpi5.nix ];
-      # };
-
-      # ── Future boards ─────────────────────────────────────────────────────────
-      # rock5b = mkSystem {
-      #   hostname = "embedded";
-      #   system   = "aarch64-linux";
-      #   withNiri = false;
-      #   extraModules = [ ./hosts/embedded/rock5b.nix ];
-      # };
-
-    };
-  };
 }
