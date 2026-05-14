@@ -1,9 +1,9 @@
 # lolearn — local learning/memory CLI
 # Source: github:nanonite/legendary-couscous-lolearn
 #
-# First build on the Framework laptop will report the fixed-output hash mismatch:
+# First build on the Framework laptop will report fixed-output hash mismatches:
 #   nix build .#lolearn
-# Replace the src hash with the reported "got:" value.
+# Replace the src hash first, then repeat for cargoHash.
 
 {
   lib,
@@ -22,7 +22,7 @@ rustPlatform.buildRustPackage {
     hash = lib.fakeHash;
   };
 
-  cargoLock.lockFile = "${src}/Cargo.lock";
+  cargoHash = lib.fakeHash;
 
   meta = {
     description = "Local learning and memory CLI for agent workflows";
