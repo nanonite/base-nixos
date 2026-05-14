@@ -21,20 +21,20 @@ final: prev: {
   # masterblaster (mb) — stereOS AI agent sandbox manager (Go)
   # REMOVED from active config: no x86_64 binary available upstream.
   # Kept here for hash-filling workflow if/when x86 support lands.
-  masterblaster = final.callPackage ./masterblaster.nix {};
+  masterblaster = final.callPackage ./masterblaster.nix { };
 
   # tilth — code intelligence MCP server (Rust, crates.io)
-  tilth = final.callPackage ./tilth.nix {};
+  tilth = final.callPackage ./tilth.nix { };
 
   # kaish — constrained agent shell (Rust)
-  kaish = final.callPackage ./kaish.nix {};
+  kaish = final.callPackage ./kaish.nix { };
 
   # tracey — REMOVED: requires two-phase build (Vite dashboard via include_str!) +
   # pnpm offline tarball errors. Not currently used.
 
   # chainlink — CLI issue tracker + MCP server (issues, sub-issues, milestones, labels)
   # SQLite at .chainlink/issues.db — planner stage writes here, exomonad agents read/update
-  chainlink = final.callPackage ./chainlink.nix {};
+  chainlink = final.callPackage ./chainlink.nix { };
 
   # exomonad-wasm — Haskell WASM plugins (FOD, built with GHC 9.12 wasm32-wasi)
   exomonadWasm = final.callPackage ./exomonad-wasm.nix {
@@ -42,9 +42,12 @@ final: prev: {
   };
 
   # exomonad — task orchestration router (Rust binary; WASM injected via callPackage)
-  exomonad = final.callPackage ./exomonad.nix {};
+  exomonad = final.callPackage ./exomonad.nix { };
 
   # context-mode — context window manager (TypeScript, pre-bundled, Node.js wrapper)
-  context-mode = final.callPackage ./context-mode.nix {};
+  context-mode = final.callPackage ./context-mode.nix { };
+
+  # docker-sbx — Docker Sandboxes host CLI/runtime used by pwa-sandbox workflows
+  docker-sbx = final.callPackage ./docker-sbx.nix { };
 
 }

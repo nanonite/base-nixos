@@ -1,4 +1,9 @@
-{ inputs, pkgs, lib, ... }:
+{
+  inputs,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   imports = [
@@ -6,8 +11,8 @@
     inputs.dms.homeModules.dank-material-shell
     inputs.dms.homeModules.niri
   ];
-  home.username = "you";        # change to your actual username
-  home.homeDirectory = "/home/you"; # change accordingly
+  home.username = "framework"; # change to your actual username
+  home.homeDirectory = "/home/framework"; # change accordingly
 
   # Match this to system.stateVersion in common.nix — do NOT change after first install
   home.stateVersion = "25.05";
@@ -35,11 +40,11 @@
   programs.dank-material-shell = {
     enable = true;
     enableSystemMonitoring = true;
-    enableVPN              = true;
-    enableDynamicTheming   = true;
-    enableAudioWavelength  = true;
-    enableCalendarEvents   = true;  # khal build was fixed in nixpkgs after Feb 28 2026
-    enableClipboardPaste   = true;
+    enableVPN = true;
+    enableDynamicTheming = true;
+    enableAudioWavelength = true;
+    enableCalendarEvents = true; # khal build was fixed in nixpkgs after Feb 28 2026
+    enableClipboardPaste = true;
     systemd = {
       enable = true;           # run DMS as a systemd user service (generates config files before niri reads them)
       restartIfChanged = true;
@@ -61,15 +66,15 @@
   };
 
   programs.tmux = {
-    enable       = true;
-    clock24      = true;
-    keyMode      = "vi";
-    mouse        = true;
-    baseIndex    = 1;          # windows start at 1 not 0
-    escapeTime   = 0;          # no ESC delay (important for neovim)
+    enable = true;
+    clock24 = true;
+    keyMode = "vi";
+    mouse = true;
+    baseIndex = 1; # windows start at 1 not 0
+    escapeTime = 0; # no ESC delay (important for neovim)
     historyLimit = 50000;
-    terminal     = "tmux-256color";
-    prefix       = "C-a";      # Ctrl+a instead of Ctrl+b
+    terminal = "tmux-256color";
+    prefix = "C-a"; # Ctrl+a instead of Ctrl+b
 
     extraConfig = ''
       # Better splits — open in current directory
@@ -153,12 +158,12 @@
     shellIntegration.enableBashIntegration = true;
 
     settings = {
-      window_padding_width    = 8;
+      window_padding_width = 8;
       confirm_os_window_close = 0;
-      enable_audio_bell       = false;
-      scrollback_lines        = 10000;
-      repaint_delay           = 10;
-      sync_to_monitor         = true;
+      enable_audio_bell = false;
+      scrollback_lines = 10000;
+      repaint_delay = 10;
+      sync_to_monitor = true;
     };
   };
 
@@ -167,42 +172,45 @@
 
   programs.bash = {
     enable = true;
-    historyControl = [ "ignoredups" "ignorespace" ];
+    historyControl = [
+      "ignoredups"
+      "ignorespace"
+    ];
     shellAliases = {
       # NixOS rebuild shortcuts
-      update     = "sudo nixos-rebuild switch --flake /etc/nixos#framework";
-      upgrade    = "sudo nix flake update /etc/nixos && sudo nixos-rebuild switch --flake /etc/nixos#framework";
-      rollback   = "sudo nixos-rebuild switch --rollback";
+      update = "sudo nixos-rebuild switch --flake /etc/nixos#framework";
+      upgrade = "sudo nix flake update /etc/nixos && sudo nixos-rebuild switch --flake /etc/nixos#framework";
+      rollback = "sudo nixos-rebuild switch --rollback";
       generations = "nixos-rebuild list-generations";
 
       # btrfs snapshot before a risky operation
-      snap       = "sudo btrbk snapshot";
+      snap = "sudo btrbk snapshot";
 
       # ls improvements
-      ls         = "ls --color=auto";
-      ll         = "ls -lah --color=auto";
+      ls = "ls --color=auto";
+      ll = "ls -lah --color=auto";
 
       # ── Agent orchestration ──────────────────────────────────────────────
       # Normal mode — one agent per task
-      agent-gemini  = "mb up --config /etc/nixos/agent-sandbox/jcard-gemini.toml";
-      agent-claude  = "mb up --config /etc/nixos/agent-sandbox/jcard-claude.toml";
-      agent-open    = "mb up --config /etc/nixos/agent-sandbox/jcard-opencode.toml";
+      agent-gemini = "mb up --config /etc/nixos/agent-sandbox/jcard-gemini.toml";
+      agent-claude = "mb up --config /etc/nixos/agent-sandbox/jcard-claude.toml";
+      agent-open = "mb up --config /etc/nixos/agent-sandbox/jcard-opencode.toml";
 
       # Benchmark mode — all agents in parallel for the same task
-      benchmark     = "BENCHMARK_MODE=1 mb up --config /etc/nixos/agent-sandbox/jcard-benchmark.toml";
+      benchmark = "BENCHMARK_MODE=1 mb up --config /etc/nixos/agent-sandbox/jcard-benchmark.toml";
 
       # Marimo dashboard
-      dashboard     = "marimo run /etc/nixos/planner/dashboard.py";
+      dashboard = "marimo run /etc/nixos/planner/dashboard.py";
       dashboard-edit = "marimo edit /etc/nixos/planner/dashboard.py";
 
       # JIRA shortcuts (go-jira)
-      jl            = "jira issue list --project \${JIRA_PROJECT:-MYPROJ} --status 'In Progress'";
-      jc            = "jira issue create --project \${JIRA_PROJECT:-MYPROJ}";
-      jt            = "jira issue transition";
+      jl = "jira issue list --project \${JIRA_PROJECT:-MYPROJ} --status 'In Progress'";
+      jc = "jira issue create --project \${JIRA_PROJECT:-MYPROJ}";
+      jt = "jira issue transition";
 
       # Mixtape build + publish
       mixtape-build = "nix build /etc/nixos/mixtape/.#mixtape";
-      mixtape-pub   = "mb mixtape publish agent-workbench:latest ./result";
+      mixtape-pub = "mb mixtape publish agent-workbench:latest ./result";
     };
     initExtra = ''
       # Auto-start tmux on terminal open (if not already inside tmux)
@@ -270,28 +278,74 @@
   # exomonad looks for WASM in ~/.exo/wasm/ as its global fallback.
   # Symlink the Nix-built plugins there so `exomonad new/init` finds them
   # without manual setup. Updated automatically on nixos-rebuild.
-  home.activation.exomonadWasm = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.exomonadWasm = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.exo/wasm"
     for f in ${pkgs.exomonad}/share/exomonad/wasm/*.wasm; do
       ln -sf "$f" "$HOME/.exo/wasm/$(basename $f)"
     done
   '';
 
-  # ── Claude Code global MCP servers ────────────────────────────────────────
-  # Registers agent tools globally in ~/.claude.json so every Claude Code
-  # session (planner + all fork_wave spawned agents) has them available.
-  # Runs after each nixos-rebuild. tilth path is always overwritten because the
-  # nix store hash changes on rebuild — a stale path silently breaks the MCP server.
-  # ~/.claude.json must already exist (created on first `claude` launch).
-  home.activation.claudeMcpServers = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  # ── Global MCP servers for agent harnesses ────────────────────────────────
+  # Registers tilth and context-mode for each coding harness. Store paths are
+  # rewritten on every rebuild because stale Nix store hashes silently break MCP.
+  home.activation.claudeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     CLAUDE_JSON="$HOME/.claude.json"
     JQ="${pkgs.jq}/bin/jq"
 
-    if [ -f "$CLAUDE_JSON" ]; then
-      # Always overwrite — store hash changes on every rebuild, stale path = silent failure
-      $JQ '.mcpServers.tilth = {"command": "${pkgs.tilth}/bin/tilth", "args": ["--mcp"]}' \
-        "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
+    if [ ! -f "$CLAUDE_JSON" ]; then
+      echo '{}' > "$CLAUDE_JSON"
     fi
+
+    $JQ '
+      .mcpServers = (.mcpServers // {})
+      | .mcpServers.tilth = {"command": "${pkgs.tilth}/bin/tilth", "args": ["--mcp"]}
+      | .mcpServers."context-mode" = {"command": "${pkgs."context-mode"}/bin/context-mode"}
+    ' "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
+  '';
+
+  home.activation.opencodeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    OPENCODE_JSON="$HOME/.config/opencode/opencode.json"
+    JQ="${pkgs.jq}/bin/jq"
+
+    mkdir -p "$(dirname "$OPENCODE_JSON")"
+    if [ ! -f "$OPENCODE_JSON" ]; then
+      echo '{}' > "$OPENCODE_JSON"
+    fi
+
+    $JQ '
+      .mcp = (.mcp // {})
+      | .mcp.tilth = {"type": "local", "command": ["${pkgs.tilth}/bin/tilth", "--mcp"]}
+      | .mcp."context-mode" = {"type": "local", "command": ["${pkgs."context-mode"}/bin/context-mode"]}
+    ' "$OPENCODE_JSON" > "$OPENCODE_JSON.tmp" && mv "$OPENCODE_JSON.tmp" "$OPENCODE_JSON"
+  '';
+
+  home.activation.codexMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    CODEX_CONFIG="$HOME/.codex/config.toml"
+    START_MARKER="# BEGIN NIX MANAGED MCP SERVERS"
+    END_MARKER="# END NIX MANAGED MCP SERVERS"
+
+    mkdir -p "$(dirname "$CODEX_CONFIG")"
+    if [ ! -f "$CODEX_CONFIG" ]; then
+      touch "$CODEX_CONFIG"
+    fi
+
+    ${pkgs.gawk}/bin/awk -v start="$START_MARKER" -v end="$END_MARKER" '
+      $0 == start { skip = 1; next }
+      $0 == end { skip = 0; next }
+      skip != 1 { print }
+    ' "$CODEX_CONFIG" > "$CODEX_CONFIG.tmp"
+
+    {
+      printf '\n%s\n' "$START_MARKER"
+      printf '[mcp_servers.tilth]\n'
+      printf 'command = "${pkgs.tilth}/bin/tilth"\n'
+      printf 'args = ["--mcp"]\n\n'
+      printf '[mcp_servers.context-mode]\n'
+      printf 'command = "${pkgs."context-mode"}/bin/context-mode"\n'
+      printf '%s\n' "$END_MARKER"
+    } >> "$CODEX_CONFIG.tmp"
+
+    mv "$CODEX_CONFIG.tmp" "$CODEX_CONFIG"
   '';
 
   # ── Claude Code context-mode plugin ───────────────────────────────────────
@@ -299,7 +353,7 @@
   # store — no marketplace download required on a fresh machine.
   # Symlinks the plugin tree into the cache path Claude Code expects, then
   # patches installed_plugins.json and settings.json to register it.
-  home.activation.claudeContextModePlugin = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.claudeContextModePlugin = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     JQ="${pkgs.jq}/bin/jq"
     PLUGIN_SRC="${pkgs."context-mode"}/share/context-mode/plugin"
     PLUGIN_VER="1.0.53"
@@ -355,28 +409,28 @@
     # Utilities
     ripgrep
     fd
-    bat          # better cat
-    eza          # better ls (fork of exa)
-    fzf          # fuzzy finder
+    bat # better cat
+    eza # better ls (fork of exa)
+    fzf # fuzzy finder
     htop
     btop
     unzip
 
     # Nix helpers
-    nixd         # Nix language server (used by VS Code nix-ide extension above)
-    nixfmt-rfc-style  # nix formatter
-    nix-tree     # visualise nix store dependencies
-    nix-du       # find what's eating disk space in /nix/store
-    nvd          # diff between NixOS generations (shows what changed)
+    nixd # Nix language server (used by VS Code nix-ide extension above)
+    nixfmt-rfc-style # nix formatter
+    nix-tree # visualise nix store dependencies
+    nix-du # find what's eating disk space in /nix/store
+    nvd # diff between NixOS generations (shows what changed)
 
     # Wayland utilities
     wl-clipboard
-    wev          # Wayland event viewer (useful for finding key names for niri)
-    grimblast    # screenshot helper (wraps grim+slurp, auto-names files)
+    wev # Wayland event viewer (useful for finding key names for niri)
+    grimblast # screenshot helper (wraps grim+slurp, auto-names files)
 
     # Image & document viewers
-    imv          # lightweight Wayland image viewer
-    evince       # PDF viewer
+    imv # lightweight Wayland image viewer
+    evince # PDF viewer
 
     # Creative
     blender
@@ -402,8 +456,8 @@
 
   # ── VSCode ────────────────────────────────────────────────────────────────
   programs.vscode = {
-    enable  = true;
-    package = pkgs.vscode;  # FHS chroot — needed for extensions that download pre-compiled binaries
+    enable = true;
+    package = pkgs.vscode; # FHS chroot — needed for extensions that download pre-compiled binaries
     profiles.default.userSettings = {
       "claudeCode.claudeProcessWrapper" = "/etc/profiles/per-user/framework/bin/claude";
     };

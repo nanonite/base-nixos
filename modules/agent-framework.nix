@@ -1,4 +1,10 @@
-{ lib, pkgs, config, inputs, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 
 # ── agent-framework.nix — agentic coding platform ─────────────────────────────
 #
@@ -15,8 +21,8 @@
 {
   options.agentFramework = {
     enable = lib.mkOption {
-      type        = lib.types.bool;
-      default     = true;
+      type = lib.types.bool;
+      default = true;
       description = "Enable the agentic coding framework tools on this host.";
     };
 
@@ -24,6 +30,11 @@
       benchmark mode — dispatches each task to Gemini, Claude, and opencode in
       parallel. Results are written to ./benchmark-results/ and compared in the
       Marimo dashboard. Toggle without rebuild via BENCHMARK_MODE=1 env var.
+    '';
+
+    codexAuth.enable = lib.mkEnableOption ''
+      Codex auth.json restoration from the codex_auth_json sops secret.
+      Enable only after adding that secret to secrets.yaml.
     '';
   };
 
@@ -46,6 +57,9 @@
         # bun — fast JS/TS runtime; agents may generate and execute JS/TS scripts.
         # Also satisfies context-mode's "install bun for faster JS/TS" tip.
         bun
+
+        # codex — OpenAI coding agent CLI
+        codex
 
         # ── Custom derivations from pkgs/ overlay ────────────────────────────────
         # Workflow to activate each tool:
@@ -90,6 +104,9 @@
 
         # opencode — AI coding agent (TypeScript, anomalyco)
         pkgs.opencode
+
+        # docker-sbx — Docker Sandboxes host CLI/runtime for pwa-sandbox workflows
+        pkgs.docker-sbx
 
         # ── Not binary tools — installed differently ─────────────────────────────
         # learning-opportunities — Claude Code plugin:
