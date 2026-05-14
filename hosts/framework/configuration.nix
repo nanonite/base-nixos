@@ -66,6 +66,8 @@
 
     # VLC
     vlc
+
+    libreoffice
   ];
 
   # Polkit — required for apps like GParted, file managers to request sudo

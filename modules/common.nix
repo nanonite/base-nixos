@@ -188,6 +188,7 @@
     git
     curl
     wget
+    gcc
     # TODO: re-enable after verifying masterblaster has flake packages output
     # inputs.masterblaster.packages.${pkgs.system}.default
   ];
