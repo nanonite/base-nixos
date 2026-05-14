@@ -32,6 +32,11 @@
       Codex auth.json restoration from the codex_auth_json sops secret.
       Enable only after adding that secret to secrets.yaml.
     '';
+
+    sbxAuth.enable = lib.mkEnableOption ''
+      Docker Sandboxes auth restoration from the sbx_config_tgz_b64 sops secret.
+      Enable only after adding that secret to secrets.yaml.
+    '';
   };
 
   config = lib.mkMerge [

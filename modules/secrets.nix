@@ -30,6 +30,11 @@
         owner = "framework";
         mode = "0400";
       };
+    } // lib.optionalAttrs config.agentFramework.sbxAuth.enable {
+      sbx_config_tgz_b64 = {
+        owner = "framework";
+        mode = "0400";
+      };
     };
   };
 
@@ -84,6 +89,33 @@
         mkdir -p "$HOME/.codex"
         cp "$SECRET" "$HOME/.codex/auth.json"
         chmod 600 "$HOME/.codex/auth.json"
+      '';
+    };
+  };
+
+  # Docker Sandboxes stores its login material in an opaque posixage-backed
+  # config tree under ~/.config/com.docker.sandboxes. Restore the whole small
+  # tree rather than depending on undocumented file names such as secretpass.
+  systemd.user.services.sbx-auth = lib.mkIf config.agentFramework.sbxAuth.enable {
+    description = "Restore Docker Sandboxes auth/config from sops";
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "restore-sbx-auth" ''
+        SECRET=/run/secrets/sbx_config_tgz_b64
+        TARGET="$HOME/.config/com.docker.sandboxes"
+
+        if [ ! -s "$SECRET" ]; then
+          exit 0
+        fi
+
+        mkdir -p "$HOME/.config"
+        rm -rf "$TARGET"
+        ${pkgs.coreutils}/bin/base64 -d "$SECRET" | ${pkgs.gnutar}/bin/tar -xzf - -C "$HOME/.config"
+        chmod 700 "$TARGET"
+        find "$TARGET" -type d -exec chmod 700 {} +
+        find "$TARGET" -type f -exec chmod 600 {} +
       '';
     };
   };
