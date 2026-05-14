@@ -14,9 +14,6 @@
 # Custom tool derivations live in pkgs/ (overlay applied in flake.nix).
 # Tools are uncommented here as their pkgs/ derivations are verified to build.
 #
-# Deferred (stubs only):
-#   lolearn       — integrate after core architecture is proven
-
 {
   options.agentFramework = {
     enable = lib.mkOption {
@@ -103,6 +100,9 @@
 
         # opencode — AI coding agent (TypeScript, anomalyco)
         pkgs.opencode
+
+        # lolearn — local learning/memory CLI for agent workflows
+        pkgs.lolearn
 
         # docker-sbx — Docker Sandboxes host CLI/runtime for pwa-sandbox workflows
         pkgs.docker-sbx
