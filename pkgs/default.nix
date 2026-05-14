@@ -47,9 +47,6 @@ final: prev: {
   # context-mode — context window manager (TypeScript, pre-bundled, Node.js wrapper)
   context-mode = final.callPackage ./context-mode.nix { };
 
-  # lolearn — local learning/memory CLI for agent workflows
-  lolearn = final.callPackage ./lolearn.nix { };
-
   # docker-sbx — Docker Sandboxes host CLI/runtime used by pwa-sandbox workflows
   docker-sbx = final.callPackage ./docker-sbx.nix { };
 

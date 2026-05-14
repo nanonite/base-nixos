@@ -101,9 +101,6 @@
         # opencode — AI coding agent (TypeScript, anomalyco)
         pkgs.opencode
 
-        # lolearn — local learning/memory CLI for agent workflows
-        pkgs.lolearn
-
         # docker-sbx — Docker Sandboxes host CLI/runtime for pwa-sandbox workflows
         pkgs.docker-sbx
 

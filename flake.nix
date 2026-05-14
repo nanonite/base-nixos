@@ -176,7 +176,6 @@
           chainlink
           exomonad
           exomonadWasm
-          lolearn
           docker-sbx
           codex
           ;
