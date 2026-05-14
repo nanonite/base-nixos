@@ -15,7 +15,6 @@
 # Tools are uncommented here as their pkgs/ derivations are verified to build.
 #
 # Deferred (stubs only):
-#   token-monitor — integrate after core architecture is proven
 #   lolearn       — integrate after core architecture is proven
 
 {
@@ -118,18 +117,11 @@
 
       ];
 
-      # ── TOKEN MONITOR — deferred ─────────────────────────────────────────────
-      # Integrate after core NixOS architecture is proven.
-      # When ready: add ANTHROPIC_BASE_URL proxy, wire ledger to Marimo dashboard.
-      #
-      # services.token-monitor = {
-      #   enable      = true;
-      #   proxyPort   = 9999;
-      #   ledgerPath  = "/var/lib/token-monitor";
-      # };
-      #
-      # And add to each jcard secrets:
-      #   ANTHROPIC_BASE_URL = "http://localhost:9999"
+      security.apparmor = {
+        enable = true;
+        policies.docker-sbx-nerdbox-shim.path =
+          "${pkgs.docker-sbx}/etc/apparmor.d/docker-sbx-nerdbox-shim";
+      };
 
     })
 

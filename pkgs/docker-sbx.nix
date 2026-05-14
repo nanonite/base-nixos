@@ -1,11 +1,14 @@
 {
-  stdenvNoCC,
+  stdenv,
   fetchurl,
   dpkg,
-  makeWrapper,
+  autoPatchelfHook,
+  lz4,
+  zlib,
+  zstd,
 }:
 
-stdenvNoCC.mkDerivation {
+stdenv.mkDerivation {
   pname = "docker-sbx";
   version = "0.29.0";
 
@@ -16,7 +19,14 @@ stdenvNoCC.mkDerivation {
 
   nativeBuildInputs = [
     dpkg
-    makeWrapper
+    autoPatchelfHook
+  ];
+
+  buildInputs = [
+    stdenv.cc.cc.lib
+    lz4
+    zlib
+    zstd
   ];
 
   unpackPhase = ''
@@ -28,13 +38,14 @@ stdenvNoCC.mkDerivation {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/bin $out/libexec/docker-sbx $out/share/doc/docker-sbx
-    cp usr/bin/sbx $out/libexec/docker-sbx/sbx
-    cp -r usr/libexec/* $out/libexec/docker-sbx/
+    mkdir -p $out/bin $out/libexec $out/etc/apparmor.d $out/share/doc/docker-sbx
+    cp usr/bin/sbx $out/bin/sbx
+    cp -r usr/libexec/* $out/libexec/
     cp -r usr/share/doc/docker-sbx/* $out/share/doc/docker-sbx/ 2>/dev/null || true
-
-    makeWrapper $out/libexec/docker-sbx/sbx $out/bin/sbx \
-      --set DOCKER_SBX_LIBEXEC $out/libexec/docker-sbx
+    substitute etc/apparmor.d/docker-sbx-nerdbox-shim \
+      $out/etc/apparmor.d/docker-sbx-nerdbox-shim \
+      --replace-fail /usr/libexec/containerd-shim-nerdbox-v1 \
+        $out/libexec/containerd-shim-nerdbox-v1
 
     runHook postInstall
   '';
