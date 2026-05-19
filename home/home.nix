@@ -153,6 +153,10 @@
       size = 14;
     };
 
+    keybindings = {
+      "ctrl+t" = "new_tab_with_cwd";
+    };
+
     # Disable title/cursor shape changes — tmux intercepts these OSC codes
     shellIntegration.mode = "no-title no-cursor";
     shellIntegration.enableBashIntegration = true;

@@ -42,7 +42,7 @@
 
     # opencode — AI coding agent (TypeScript, anomalyco)
     opencode = {
-      url = "github:anomalyco/opencode/v1.15.0";
+      url = "github:anomalyco/opencode/v1.15.5";
     };
 
     # sops-nix — encrypted secrets management
@@ -98,10 +98,14 @@
           printf 'export default {};\n' > "$dir/plugins/estree.js"
         done
       '';
+      relaxBunVersionCheck = ''
+        substituteInPlace packages/script/src/index.ts \
+          --replace-fail 'if (!semver.satisfies(process.versions.bun, expectedBunVersionRange)) {' 'if (false) {'
+      '';
       patchOpencode =
         pkg:
         pkg.overrideAttrs (old: {
-          preBuild = stubPrettierPrior + (old.preBuild or "");
+          preBuild = stubPrettierPrior + relaxBunVersionCheck + (old.preBuild or "");
         });
 
       # Helper to build a NixOS system config — keeps outputs block clean.
