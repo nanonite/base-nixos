@@ -42,8 +42,7 @@
 
     # opencode — AI coding agent (TypeScript, anomalyco)
     opencode = {
-      url = "github:anomalyco/opencode/v1.14.20";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:anomalyco/opencode/v1.15.0";
     };
 
     # sops-nix — encrypted secrets management
@@ -89,8 +88,10 @@
       stubPrettierPrior = ''
         chmod u+w node_modules/ packages/opencode/node_modules/ 2>/dev/null || true
         for dir in node_modules/prettier packages/opencode/node_modules/prettier; do
+	  chmod -R u+w "$dir" 2>/dev/null || true
           mkdir -p "$dir/plugins"
           printf 'export const format = async s => s;\nexport default { format: async s => s };\n' > "$dir/index.js"
+	  chmod +x "$dir/index.js"
           cp "$dir/index.js" "$dir/index.mjs"
           printf '{"name":"prettier","version":"3.0.0","type":"module","main":"index.js","module":"index.mjs"}\n' > "$dir/package.json"
           printf 'export default {};\n' > "$dir/plugins/babel.js"
@@ -126,11 +127,9 @@
                   rust-overlay.overlays.default
                   (import ./pkgs/default.nix { inherit (inputs) ghc-wasm-meta; })
                   (
-                    final: prev:
-                    let
-                      base = opencode.overlays.default final prev;
-                    in
-                    base // { opencode = patchOpencode base.opencode; }
+                    _final:_prev: {
+			opencode = patchOpencode opencode.packages.${system}.opencode;
+		    }
                   )
                 ];
               }

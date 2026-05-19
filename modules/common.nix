@@ -96,7 +96,7 @@
 
   # ── Locale / Time ─────────────────────────────────────────────────────────
 
-  time.timeZone = "America/New_York"; # change to your timezone
+  time.timeZone = "America/Bogota"; # change to your timezone
   i18n.defaultLocale = "en_US.UTF-8";
 
   # ── Networking ────────────────────────────────────────────────────────────
@@ -109,9 +109,9 @@
   # ── Users ─────────────────────────────────────────────────────────────────
   # IMPORTANT: Change "you" to your actual username throughout this file
 
-  users.users.you = {
+  users.users.framework = {
     isNormalUser = true;
-    description  = "Your Name";
+    description  = "framework";
     extraGroups  = [
       "wheel"        # sudo access
       "networkmanager"
