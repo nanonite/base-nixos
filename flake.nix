@@ -144,6 +144,7 @@
 
             # Agentic coding framework (orchestration, JIRA CLI, benchmark toggle)
             ./modules/agent-framework.nix
+            ./modules/forgejo-ci.nix
 
             # Encrypted secrets management (sops-nix)
             sops-nix.nixosModules.sops

@@ -16,19 +16,20 @@
 
 rustPlatform.buildRustPackage {
   pname   = "exomonad";
-  version = "unstable-2026-05-22";
+  version = "unstable-2026-05-25";
 
   src = fetchFromGitHub {
     owner = "nanonite";
     repo  = "exomonad";
-    rev   = "bef6c0206ec0f2fdab79fd986ca65cdf76dd3a72";
-    hash  = "sha256-HU8eUy3GN+a7UHCRakSsghkZidx1vOM1n/w+/y5ljm8=";
+    # feat/codex-integration
+    rev   = "e0ac788e73e4499c1fc558686f2b49fde32a5cdb";
+    hash  = "sha256-DT519nrx0LcxUDwngLIEr63T/0qfX9s+hWRdUd5bDv4=";
   };
 
   nativeBuildInputs = [ pkg-config protobuf ];
   buildInputs       = [ openssl ];
 
-  cargoHash = "sha256-0oQ0iOgIqRn2cr/wT1Zu3F4LpFPEQkAxzuzFyGwIW7Q=";
+  cargoHash = "sha256-QA9sueqhHqPyr2NDH6z0V8L101E9xzArfvr8u1ebOzY=";
 
   doCheck = false;
 

@@ -127,8 +127,9 @@
     };
   };
 
-  # ── Docker ────────────────────────────────────────────────────────────────
+  # ── Docker / local Forgejo CI ─────────────────────────────────────────────
   virtualisation.docker.enable = true;
+  agentFramework.forgejoCi.enable = true;
 
   # ── Bluetooth ─────────────────────────────────────────────────────────────
 
