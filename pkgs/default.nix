@@ -50,4 +50,7 @@ final: prev: {
   # docker-sbx — Docker Sandboxes host CLI/runtime used by pwa-sandbox workflows
   docker-sbx = final.callPackage ./docker-sbx.nix { };
 
+  # codex — local override to pin a newer release than the current nixpkgs input
+  codex = final.callPackage ./codex.nix { };
+
 }

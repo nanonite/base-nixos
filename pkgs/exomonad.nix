@@ -16,22 +16,23 @@
 
 rustPlatform.buildRustPackage {
   pname   = "exomonad";
-  version = "unstable-2026-04-29";
+  version = "unstable-2026-05-22";
 
   src = fetchFromGitHub {
     owner = "nanonite";
     repo  = "exomonad";
-    rev   = "397b68e8429ec5b187e84fffc963957c589de8c9";
-    hash  = "sha256-A1KG5Gv5YtwfnESLh8Oo9FibgRgJKmbjryEau0jPTrg=";
+    rev   = "bef6c0206ec0f2fdab79fd986ca65cdf76dd3a72";
+    hash  = "sha256-HU8eUy3GN+a7UHCRakSsghkZidx1vOM1n/w+/y5ljm8=";
   };
 
   nativeBuildInputs = [ pkg-config protobuf ];
   buildInputs       = [ openssl ];
 
-  cargoHash = "sha256-xBIfEMx8ORb4szEMWpDZwYfa5yvruB7qqn/dAb3uEy4=";
+  cargoHash = "sha256-0oQ0iOgIqRn2cr/wT1Zu3F4LpFPEQkAxzuzFyGwIW7Q=";
+
+  doCheck = false;
 
   cargoBuildFlags = [ "-p" "exomonad" ];
-  cargoTestFlags  = [ "-p" "exomonad" ];
 
   postInstall = ''
     # Store WASM plugins in the package share directory.

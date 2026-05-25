@@ -154,7 +154,7 @@
     };
 
     keybindings = {
-      "ctrl+t" = "new_tab_with_cwd";
+      "ctrl+shift+t" = "launch --type=tab --cwd=current";
     };
 
     # Disable title/cursor shape changes — tmux intercepts these OSC codes
@@ -215,13 +215,8 @@
       # Mixtape build + publish
       mixtape-build = "nix build /etc/nixos/mixtape/.#mixtape";
       mixtape-pub = "mb mixtape publish agent-workbench:latest ./result";
+      tm = "tmux attach-session -t main 2>/dev/null || tmux new-session -s main";
     };
-    initExtra = ''
-      # Auto-start tmux on terminal open (if not already inside tmux)
-      if command -v tmux &>/dev/null && [ -z "$TMUX" ] && [ "$TERM_PROGRAM" != "vscode" ]; then
-        tmux attach-session -t main 2>/dev/null || tmux new-session -s main
-      fi
-    '';
   };
 
   # ── go-jira config ────────────────────────────────────────────────────────

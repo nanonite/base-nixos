@@ -14,13 +14,13 @@
 
 stdenv.mkDerivation {
   pname   = "exomonad-wasm";
-  version = "unstable-2026-04-29";
+  version = "unstable-2026-05-22";
 
   src = fetchFromGitHub {
     owner = "nanonite";
     repo  = "exomonad";
-    rev   = "397b68e8429ec5b187e84fffc963957c589de8c9";
-    hash  = "sha256-A1KG5Gv5YtwfnESLh8Oo9FibgRgJKmbjryEau0jPTrg=";
+    rev   = "bef6c0206ec0f2fdab79fd986ca65cdf76dd3a72";
+    hash  = "sha256-HU8eUy3GN+a7UHCRakSsghkZidx1vOM1n/w+/y5ljm8=";
   };
 
   nativeBuildInputs = [ wasmToolchain wizer cacert curl ];
@@ -33,7 +33,7 @@ stdenv.mkDerivation {
   # Run `nix build .#exomonad-wasm` with a placeholder hash to get the real one.
   outputHashMode = "recursive";
   outputHashAlgo = "sha256";
-  outputHash     = "sha256-/uZ7TyPG0EzVbzSdnPKge3i1BrshI4fXG5Nw6n1Vv/k=";
+  outputHash     = "sha256-/Zm7dQ7LAmmGAcyUaSbMuAuCcTuEWGt3j1xrUv0aJkU=";
 
   postPatch = ''
     # Remove developer-local external role paths (not present outside author's machine)
@@ -47,6 +47,7 @@ stdenv.mkDerivation {
     # Force cabal to use system curl (which has full HTTPS) instead of its
     # built-in Haskell HTTP client (compiled without TLS in the wasm toolchain).
     echo 'http-transport: curl' >> cabal.project.wasm
+
   '';
 
   buildPhase = ''
