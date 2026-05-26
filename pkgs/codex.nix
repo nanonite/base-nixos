@@ -25,6 +25,9 @@
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "codex";
+  # Keep this pinned to the latest upstream Rust release tag after verifying it.
+  # When updating, diff against nixpkgs' codex package and preserve its build
+  # shape so we do not regress into a full-workspace, fat-LTO local build.
   version = "0.133.0";
 
   src = fetchFromGitHub {
@@ -36,13 +39,23 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   sourceRoot = "${finalAttrs.src.name}/codex-rs";
 
-  cargoHash = lib.fakeHash;
+  cargoHash = "sha256-J4wvPn4lSTSsJrTG56vkhJe2F2b+fUvJLEd+qKQ9LUg=";
+
+  # Match upstream's release build for the codex binary only.
+  cargoBuildFlags = [ "--package" "codex-cli" ];
+  cargoCheckFlags = [ "--package" "codex-cli" ];
 
   postPatch = ''
     # webrtc-sys asks rustc to link libwebrtc statically by default,
     # but nixpkgs provides libwebrtc as a shared library.
     substituteInPlace $cargoDepsCopy/*/webrtc-sys-*/build.rs \
       --replace-fail "cargo:rustc-link-lib=static=webrtc" "cargo:rustc-link-lib=dylib=webrtc"
+
+    # Upstream uses a heavier release profile than is practical for local Nix
+    # builds of the CLI. Mirror nixpkgs here so rebuilds stay tractable.
+    substituteInPlace Cargo.toml \
+      --replace-fail 'lto = "fat"' "" \
+      --replace-fail 'codegen-units = 1' ""
   '';
 
   nativeBuildInputs = [
