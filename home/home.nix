@@ -295,9 +295,8 @@
 
     $JQ '
       .mcpServers = (.mcpServers // {})
-      | .mcpServers.tilth = {"command": "${pkgs.tilth}/bin/tilth", "args": ["--mcp"]}
-      | .mcpServers."context-mode" = {"command": "${pkgs."context-mode"}/bin/context-mode"}
     ' "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
+    # tilth + context-mode temporarily disabled — re-enable once crates.io 403 resolves
   '';
 
   home.activation.opencodeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -311,9 +310,8 @@
 
     $JQ '
       .mcp = (.mcp // {})
-      | .mcp.tilth = {"type": "local", "command": ["${pkgs.tilth}/bin/tilth", "--mcp"]}
-      | .mcp."context-mode" = {"type": "local", "command": ["${pkgs."context-mode"}/bin/context-mode"]}
     ' "$OPENCODE_JSON" > "$OPENCODE_JSON.tmp" && mv "$OPENCODE_JSON.tmp" "$OPENCODE_JSON"
+    # tilth + context-mode temporarily disabled — re-enable once crates.io 403 resolves
   '';
 
   home.activation.codexMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -334,58 +332,15 @@
 
     {
       printf '\n%s\n' "$START_MARKER"
-      printf '[mcp_servers.tilth]\n'
-      printf 'command = "${pkgs.tilth}/bin/tilth"\n'
-      printf 'args = ["--mcp"]\n\n'
-      printf '[mcp_servers.context-mode]\n'
-      printf 'command = "${pkgs."context-mode"}/bin/context-mode"\n'
+      # tilth + context-mode temporarily disabled — re-enable once crates.io 403 resolves
       printf '%s\n' "$END_MARKER"
     } >> "$CODEX_CONFIG.tmp"
 
     mv "$CODEX_CONFIG.tmp" "$CODEX_CONFIG"
   '';
 
-  # ── Claude Code context-mode plugin ───────────────────────────────────────
-  # Installs the context-mode Claude Code plugin declaratively from the Nix
-  # store — no marketplace download required on a fresh machine.
-  # Symlinks the plugin tree into the cache path Claude Code expects, then
-  # patches installed_plugins.json and settings.json to register it.
-  home.activation.claudeContextModePlugin = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    JQ="${pkgs.jq}/bin/jq"
-    PLUGIN_SRC="${pkgs."context-mode"}/share/context-mode/plugin"
-    PLUGIN_VER="1.0.53"
-    PLUGIN_KEY="context-mode@context-mode"
-    CACHE_DIR="$HOME/.claude/plugins/cache/context-mode/context-mode/$PLUGIN_VER"
-    INSTALLED_JSON="$HOME/.claude/plugins/installed_plugins.json"
-    SETTINGS_JSON="$HOME/.claude/settings.json"
-
-    # Symlink plugin tree into Claude Code's cache path
-    mkdir -p "$(dirname "$CACHE_DIR")"
-    if [ ! -L "$CACHE_DIR" ] || [ "$(readlink "$CACHE_DIR")" != "$PLUGIN_SRC" ]; then
-      ln -sfn "$PLUGIN_SRC" "$CACHE_DIR"
-    fi
-
-    # Register in installed_plugins.json (create file if absent)
-    if [ ! -f "$INSTALLED_JSON" ]; then
-      echo '{}' > "$INSTALLED_JSON"
-    fi
-    if ! $JQ -e --arg k "$PLUGIN_KEY" '.[$k]' "$INSTALLED_JSON" > /dev/null 2>&1; then
-      $JQ --arg k "$PLUGIN_KEY" --arg path "$CACHE_DIR" --arg ver "$PLUGIN_VER" \
-        '.[$k] = [{"scope":"user","installPath":$path,"version":$ver,"installedAt":"1970-01-01T00:00:00.000Z","lastUpdated":"1970-01-01T00:00:00.000Z","gitCommitSha":"316e0de2c11d166246dea83f787472236eb57207"}]' \
-        "$INSTALLED_JSON" > "$INSTALLED_JSON.tmp" && mv "$INSTALLED_JSON.tmp" "$INSTALLED_JSON"
-    fi
-
-    # Register in settings.json (create file if absent)
-    if [ ! -f "$SETTINGS_JSON" ]; then
-      echo '{}' > "$SETTINGS_JSON"
-    fi
-    if ! $JQ -e --arg k "$PLUGIN_KEY" '.enabledPlugins[$k]' "$SETTINGS_JSON" > /dev/null 2>&1; then
-      $JQ --arg k "$PLUGIN_KEY" \
-        '.enabledPlugins[$k] = true
-         | .extraKnownMarketplaces["context-mode"] = {"source":{"source":"github","repo":"mksglu/context-mode"}}' \
-        "$SETTINGS_JSON" > "$SETTINGS_JSON.tmp" && mv "$SETTINGS_JSON.tmp" "$SETTINGS_JSON"
-    fi
-  '';
+  # ── Claude Code context-mode plugin — temporarily disabled ───────────────
+  # Re-enable once crates.io 403 resolves: uncomment block and restore pkgs."context-mode" refs above
 
   # ── User packages (installed via Home Manager, not system-wide) ───────────
 
