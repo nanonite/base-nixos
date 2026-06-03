@@ -71,7 +71,7 @@
         #   type    = "stdio"
         #   command = "tilth"
         #   args    = ["--mcp"]
-        pkgs.tilth
+        # pkgs.tilth  # temporarily disabled — crates.io 403 on anstyle-wincon; re-enable once resolved
 
         # tracey — structured observability for agent runs
         # pkgs.tracey
