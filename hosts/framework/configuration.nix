@@ -127,6 +127,19 @@
     };
   };
 
+  # ── Sudo — allow framework user to rebuild without password ──────────────
+  security.sudo.extraRules = [
+    {
+      users = [ "framework" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/nixos-rebuild";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
+
   # ── Docker / local Forgejo CI ─────────────────────────────────────────────
   virtualisation.docker.enable = true;
   agentFramework.forgejoCi.enable = true;
