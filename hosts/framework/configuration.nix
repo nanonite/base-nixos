@@ -91,6 +91,13 @@
   # Prevents the NVMe drive from dropping off the bus during sleep/resume.
   boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=0" ];
 
+  # ── /etc/nixos ownership ──────────────────────────────────────────────────
+  # Lets the framework user git pull/push without sudo.
+  # After first boot run: sudo chown -R framework:users /etc/nixos && sudo chmod -R 775 /etc/nixos
+  systemd.tmpfiles.rules = [
+    "d /etc/nixos 0775 framework users -"
+  ];
+
   # ── Power management ──────────────────────────────────────────────────────
   # The nixos-hardware Framework module enables power-profiles-daemon and
   # thermald. These are complementary additions.
