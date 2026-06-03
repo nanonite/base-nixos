@@ -148,6 +148,9 @@
   virtualisation.docker.enable = true;
   agentFramework.forgejoCi.enable = true;
 
+  # ── USB auto-mounting ─────────────────────────────────────────────────────
+  services.udisks2.enable = true;   # DBus service that mounts removable media under /run/media/$USER
+
   # ── Bluetooth ─────────────────────────────────────────────────────────────
 
   hardware.bluetooth = {
