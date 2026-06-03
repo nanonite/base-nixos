@@ -68,6 +68,7 @@
     vlc
 
     libreoffice
+    udiskie
   ];
 
   # Polkit — required for apps like GParted, file managers to request sudo
@@ -156,7 +157,13 @@
   agentFramework.forgejoCi.enable = true;
 
   # ── USB auto-mounting ─────────────────────────────────────────────────────
-  services.udisks2.enable = true;   # DBus service that mounts removable media under /run/media/$USER
+  services.udisks2.enable = true;
+  systemd.user.services.udiskie = {
+    description = "udiskie auto-mounter";
+    wantedBy = [ "graphical-session.target" ];
+    after    = [ "graphical-session.target" ];
+    serviceConfig.ExecStart = "${pkgs.udiskie}/bin/udiskie --no-tray";
+  };
 
   # ── Bluetooth ─────────────────────────────────────────────────────────────
 
