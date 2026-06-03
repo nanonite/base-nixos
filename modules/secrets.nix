@@ -11,81 +11,93 @@
 #   2. age-keygen -o /etc/sops/age/keys.txt
 #   3. sops --encrypt --age <public-key> secrets.yaml > secrets.yaml.enc
 #   4. mv secrets.yaml.enc secrets.yaml
+#   5. Set agentFramework.secrets.enable = true in hosts/framework/configuration.nix
 
 {
-  sops = {
-    defaultSopsFile = ../secrets.yaml;
-    age.keyFile = "/etc/sops/age/keys.txt";
-    secrets = {
-      openrouter_api_key = {
-        owner = "framework";
-        mode = "0400";
+  options.agentFramework.secrets.enable = lib.mkOption {
+    type    = lib.types.bool;
+    default = false;
+    description = ''
+      Enable sops-nix secrets decryption. Requires /etc/sops/age/keys.txt on
+      the target machine. Leave false for fresh installs until the age keypair
+      has been generated, then flip to true and nixos-rebuild switch.
+    '';
+  };
+
+  config = lib.mkIf config.agentFramework.secrets.enable {
+
+    sops = {
+      defaultSopsFile = ../secrets.yaml;
+      age.keyFile = "/etc/sops/age/keys.txt";
+      secrets = {
+        openrouter_api_key = {
+          owner = "framework";
+          mode = "0400";
+        };
+        opencode_api_key = {
+          owner = "framework";
+          mode = "0400";
+        };
+      } // lib.optionalAttrs config.agentFramework.codexAuth.enable {
+        codex_auth_json = {
+          owner = "framework";
+          mode = "0400";
+        };
       };
-      opencode_api_key = {
-        owner = "framework";
-        mode = "0400";
+    };
+
+    # Inject OPENROUTER_API_KEY into the systemd user session (used by sandbox
+    # configs in agent-sandbox/ and picked up by any terminal child process).
+    systemd.user.services.sops-env = {
+      description = "Import sops secrets into the systemd user environment";
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "sops-env-import" ''
+          ${pkgs.systemd}/bin/systemctl --user set-environment \
+            OPENROUTER_API_KEY=$(cat /run/secrets/openrouter_api_key)
+        '';
       };
-    } // lib.optionalAttrs config.agentFramework.codexAuth.enable {
-      codex_auth_json = {
-        owner = "framework";
-        mode = "0400";
+    };
+
+    # Write the opencode Go API key directly into auth.json so opencode picks it
+    # up on every launch without needing any environment variable or manual /connect.
+    systemd.user.services.opencode-auth = {
+      description = "Write opencode Go API key to auth.json";
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "write-opencode-auth" ''
+          mkdir -p "$HOME/.local/share/opencode"
+          KEY=$(cat /run/secrets/opencode_api_key)
+          printf '{"opencode-go":{"type":"api","key":"%s"}}\n' "$KEY" \
+            > "$HOME/.local/share/opencode/auth.json"
+          chmod 600 "$HOME/.local/share/opencode/auth.json"
+        '';
       };
     };
-  };
 
-  # Inject OPENROUTER_API_KEY into the systemd user session (used by sandbox
-  # configs in agent-sandbox/ and picked up by any terminal child process).
-  systemd.user.services.sops-env = {
-    description = "Import sops secrets into the systemd user environment";
-    wantedBy = [ "default.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "sops-env-import" ''
-        ${pkgs.systemd}/bin/systemctl --user set-environment \
-          OPENROUTER_API_KEY=$(cat /run/secrets/openrouter_api_key)
-      '';
+    # Codex web sign-in stores OAuth-style session material in ~/.codex/auth.json.
+    systemd.user.services.codex-auth = lib.mkIf config.agentFramework.codexAuth.enable {
+      description = "Write Codex auth.json from sops when available";
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "write-codex-auth" ''
+          SECRET=/run/secrets/codex_auth_json
+          if [ ! -s "$SECRET" ]; then
+            exit 0
+          fi
+
+          mkdir -p "$HOME/.codex"
+          cp "$SECRET" "$HOME/.codex/auth.json"
+          chmod 600 "$HOME/.codex/auth.json"
+        '';
+      };
     };
+
   };
-
-  # Write the opencode Go API key directly into auth.json so opencode picks it
-  # up on every launch without needing any environment variable or manual /connect.
-  systemd.user.services.opencode-auth = {
-    description = "Write opencode Go API key to auth.json";
-    wantedBy = [ "default.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "write-opencode-auth" ''
-        mkdir -p "$HOME/.local/share/opencode"
-        KEY=$(cat /run/secrets/opencode_api_key)
-        printf '{"opencode-go":{"type":"api","key":"%s"}}\n' "$KEY" \
-          > "$HOME/.local/share/opencode/auth.json"
-        chmod 600 "$HOME/.local/share/opencode/auth.json"
-      '';
-    };
-  };
-
-  # Codex web sign-in stores OAuth-style session material in ~/.codex/auth.json.
-  # Do not try to derive an API key from it; replicate the whole auth JSON as a
-  # sops secret named codex_auth_json when you want a fresh machine to inherit it.
-  systemd.user.services.codex-auth = lib.mkIf config.agentFramework.codexAuth.enable {
-    description = "Write Codex auth.json from sops when available";
-    wantedBy = [ "default.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "write-codex-auth" ''
-        SECRET=/run/secrets/codex_auth_json
-        if [ ! -s "$SECRET" ]; then
-          exit 0
-        fi
-
-        mkdir -p "$HOME/.codex"
-        cp "$SECRET" "$HOME/.codex/auth.json"
-        chmod 600 "$HOME/.codex/auth.json"
-      '';
-    };
-  };
-
 }
