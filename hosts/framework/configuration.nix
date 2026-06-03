@@ -87,6 +87,10 @@
   services.fprintd.enable = true;
   security.pam.services.swaylock.fprintAuth = true; # unlock screen with finger
 
+  # ── NVMe power management ─────────────────────────────────────────────────
+  # Prevents the NVMe drive from dropping off the bus during sleep/resume.
+  boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=0" ];
+
   # ── Power management ──────────────────────────────────────────────────────
   # The nixos-hardware Framework module enables power-profiles-daemon and
   # thermald. These are complementary additions.
