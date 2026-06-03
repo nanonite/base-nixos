@@ -90,7 +90,11 @@
 
   # ── NVMe power management ─────────────────────────────────────────────────
   # Prevents the NVMe drive from dropping off the bus during sleep/resume.
-  boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=0" ];
+  boot.kernelParams = [
+    "nvme_core.default_ps_max_latency_us=0"
+    "nvme.noacpi=1"  # reduces s2idle suspend drain without the slow-resume cost of deep sleep
+  ];
+  boot.blacklistedKernelModules = [ "cros-usbpd-charger" ]; # mis-detected on Framework, spams error logs
 
   # ── /etc/nixos ownership ──────────────────────────────────────────────────
   # Lets the framework user git pull/push without sudo.
@@ -117,8 +121,18 @@
   services.upower.enable = true;
 
   # ── Backlight ─────────────────────────────────────────────────────────────
-  # Framework keyboard backlight and screen backlight control.
-  # Your user is already in the "video" group (set in common.nix).
+  # acpilight is the correct brightness driver for 11th-gen (nixos-generate-config mis-detects it).
+  hardware.acpilight.enable = true;
+
+  # Required for Wayland compositors to detect and manage display brightness via IIO sensor.
+  hardware.sensor.iio.enable = true;
+
+  # Fix headphone jack noise/crackling when power management is active.
+  # Fix Ethernet expansion card (RTL8156) aggressive autosuspend.
+  services.udev.extraRules = ''
+    SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0xa0e0", ATTR{power/control}="on"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="8156", ATTR{power/autosuspend}="20"
+  '';
 
 
   # ── Snapshots (btrbk) ─────────────────────────────────────────────────────
