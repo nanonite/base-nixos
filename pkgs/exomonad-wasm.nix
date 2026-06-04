@@ -34,7 +34,7 @@ stdenv.mkDerivation {
   # Run `nix build .#exomonad-wasm` with a placeholder hash to get the real one.
   outputHashMode = "recursive";
   outputHashAlgo = "sha256";
-  outputHash     = "sha256-irmA8or9ox5OxkzF9ODa83/EnWbOtI4Wo4G4z7PzM8c=";
+  outputHash     = "sha256-nUyqmDM0X0XGBiRx0YkOIGlUpXE/PEYAtP1Toeutko8=";
 
   postPatch = ''
     # Remove developer-local external role paths (not present outside author's machine)
