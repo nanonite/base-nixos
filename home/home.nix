@@ -294,9 +294,10 @@
     fi
 
     $JQ '
-      .mcpServers = (.mcpServers // {})
+      .mcpServers = (.mcpServers // {}) |
+      .mcpServers.tilth = {"command": "${pkgs.tilth}/bin/tilth", "args": ["--mcp"]} |
+      .mcpServers."context-mode" = {"command": "${pkgs."context-mode"}/bin/context-mode", "args": []}
     ' "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
-    # tilth + context-mode temporarily disabled — re-enable once crates.io 403 resolves
   '';
 
   home.activation.opencodeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -309,9 +310,10 @@
     fi
 
     $JQ '
-      .mcp = (.mcp // {})
+      .mcp = (.mcp // {}) |
+      .mcp.tilth = {"type": "local", "command": ["${pkgs.tilth}/bin/tilth", "--mcp"]} |
+      .mcp."context-mode" = {"type": "local", "command": ["${pkgs."context-mode"}/bin/context-mode"]}
     ' "$OPENCODE_JSON" > "$OPENCODE_JSON.tmp" && mv "$OPENCODE_JSON.tmp" "$OPENCODE_JSON"
-    # tilth + context-mode temporarily disabled — re-enable once crates.io 403 resolves
   '';
 
   home.activation.codexMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -332,15 +334,13 @@
 
     {
       printf '\n%s\n' "$START_MARKER"
-      # tilth + context-mode temporarily disabled — re-enable once crates.io 403 resolves
+      printf '[mcp_servers.tilth]\ncommand = "%s"\nargs = ["--mcp"]\n\n' "${pkgs.tilth}/bin/tilth"
+      printf '[mcp_servers.context-mode]\ncommand = "%s"\n' "${pkgs."context-mode"}/bin/context-mode"
       printf '%s\n' "$END_MARKER"
     } >> "$CODEX_CONFIG.tmp"
 
     mv "$CODEX_CONFIG.tmp" "$CODEX_CONFIG"
   '';
-
-  # ── Claude Code context-mode plugin — temporarily disabled ───────────────
-  # Re-enable once crates.io 403 resolves: uncomment block and restore pkgs."context-mode" refs above
 
   # ── User packages (installed via Home Manager, not system-wide) ───────────
 

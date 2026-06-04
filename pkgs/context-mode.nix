@@ -11,13 +11,13 @@
 
 stdenv.mkDerivation {
   pname   = "context-mode";
-  version = "1.0.53";
+  version = "1.0.162";
 
   src = fetchFromGitHub {
     owner = "mksglu";
     repo  = "context-mode";
-    rev   = "316e0de2c11d166246dea83f787472236eb57207"; # v1.0.53
-    hash  = "sha256-L1KF5mNYNZTltxBvTLKU8+7M7RBqpe9HUvvKnuBiJDE=";
+    rev   = "f35b8915c6d98db71dd7eb37aaeb1bbe84af2b40"; # v1.0.162
+    hash  = "sha256-yDr8N2mGwg+ejzeeMSHybaQFki6ny11Dqj6Cy+QGsdc=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
