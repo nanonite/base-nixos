@@ -97,7 +97,7 @@
         #   name         = "tempo"
         #   agent_type   = "process"
         #   command      = "docker compose -f .exo/otel/docker-compose.yml up"
-        # pkgs.exomonad  # temporarily disabled — crates.io 403 on specific crates; re-enable once resolved
+        pkgs.exomonad
 
         # opencode — AI coding agent (TypeScript, anomalyco)
         pkgs.opencode
