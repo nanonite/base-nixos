@@ -29,8 +29,8 @@ final: prev: {
   # kaish — constrained agent shell (Rust)
   kaish = final.callPackage ./kaish.nix { };
 
-  # tracey — REMOVED: requires two-phase build (Vite dashboard via include_str!) +
-  # pnpm offline tarball errors. Not currently used.
+  # tracey — structured observability for agent runs (Rust + Vite dashboard)
+  tracey = final.callPackage ./tracey.nix { };
 
   # chainlink — CLI issue tracker + MCP server (issues, sub-issues, milestones, labels)
   # SQLite at .chainlink/issues.db — planner stage writes here, exomonad agents read/update

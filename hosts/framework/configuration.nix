@@ -69,6 +69,9 @@
 
     libreoffice
     udiskie
+
+    # File manager
+    nautilus
   ];
 
   # Polkit — required for apps like GParted, file managers to request sudo

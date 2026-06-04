@@ -74,8 +74,7 @@
         pkgs.tilth
 
         # tracey — structured observability for agent runs
-        # Disabled until pkgs/tracey.nix is re-enabled in pkgs/default.nix.
-        # pkgs.tracey
+        pkgs.tracey
 
         # kaish — constrained agent shell (agent-safe, structured I/O)
         pkgs.kaish
