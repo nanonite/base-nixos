@@ -23,6 +23,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # danksearch — indexed filesystem search (DMS plugin)
+    dsearch = {
+      url = "github:AvengeMedia/danksearch";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Declarative Rust toolchain management
     rust-overlay = {
       url = "github:oxalica/rust-overlay";

@@ -10,6 +10,7 @@
     inputs.niri.homeModules.niri    # provides config.lib.niri.actions (needed by DMS)
     inputs.dms.homeModules.dank-material-shell
     inputs.dms.homeModules.niri
+    inputs.dsearch.homeModules.default
   ];
   home.username = "framework"; # change to your actual username
   home.homeDirectory = "/home/framework"; # change accordingly
@@ -56,6 +57,9 @@
     };
     niri.enableKeybinds = false;
   };
+
+  # ── danksearch — indexed filesystem search ────────────────────────────────
+  programs.dsearch.enable = true;
 
   # ── tmux ──────────────────────────────────────────────────────────────────
 
