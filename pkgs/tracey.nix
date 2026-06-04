@@ -7,9 +7,9 @@
 # Hash-filling order:
 #   1. nix build .#tracey 2>&1 | grep "got:"  → src hash
 #   2. nix build .#tracey 2>&1 | grep "got:"  → pnpmDeps hash
-#   3. nix build .#tracey 2>&1 | grep "got:"  → cargoHash
+#   3. Cargo dependencies are pinned by upstream Cargo.lock.
 
-{ rustPlatform, fetchFromGitHub, nodejs, pnpm_9, fetchPnpmDeps, pnpmConfigHook }:
+{ rustPlatform, fetchFromGitHub, nodejs, pnpm_9, fetchPnpmDeps, pnpmConfigHook, gitMinimal }:
 
 rustPlatform.buildRustPackage rec {
   pname   = "tracey";
@@ -23,21 +23,22 @@ rustPlatform.buildRustPackage rec {
   };
 
   # Pre-fetch pnpm node_modules for the embedded Vite dashboard.
-  # fetcherVersion = 2 matches pnpm lockfileVersion 9.0
+  # fetcherVersion = 3 stores a reproducible pnpm store tarball for pnpm 9.
   pnpmDeps = fetchPnpmDeps {
     pname   = "${pname}-dashboard";
     inherit version src;
+    pnpm = pnpm_9;
     sourceRoot = "source/crates/tracey/src/bridge/http/dashboard";
-    fetcherVersion = 2;
-    hash = "sha256-oFyJcA5/tzTaxDOP07nudp1jn/s+sixHC7MuasINFf8=";
+    fetcherVersion = 3;
+    hash = "sha256-nxDSFhpwL7o05wp62qcrUDYRDSyRi9JVAXen63tW7P4=";
   };
 
   # Tell pnpmConfigHook where package.json / pnpm-lock.yaml live
   pnpmRoot = "crates/tracey/src/bridge/http/dashboard";
 
-  nativeBuildInputs = [ nodejs pnpm_9 pnpmConfigHook ];
+  nativeBuildInputs = [ nodejs pnpm_9 pnpmConfigHook gitMinimal ];
 
-  cargoHash = "sha256-Rnlbh3qnzez8D9kEikzHpgT0tSO60S9fuhREzJ7HhwY=";
+  cargoLock.lockFile = "${src}/Cargo.lock";
 
   cargoBuildFlags = [ "-p" "tracey" ];
   cargoTestFlags  = [ "-p" "tracey" ];
