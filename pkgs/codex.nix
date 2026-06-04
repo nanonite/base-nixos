@@ -28,18 +28,31 @@ rustPlatform.buildRustPackage (finalAttrs: {
   # Keep this pinned to the latest upstream Rust release tag after verifying it.
   # When updating, diff against nixpkgs' codex package and preserve its build
   # shape so we do not regress into a full-workspace, fat-LTO local build.
-  version = "0.133.0";
+  version = "0.136.0";
 
   src = fetchFromGitHub {
     owner = "openai";
     repo = "codex";
     tag = "rust-v${finalAttrs.version}";
-    hash = "sha256-RTxhhZjZ/64N60pmbNVzLwcSBomn67pPDpOjkL6RPUw=";
+    hash = "sha256-MI9VrfMFuUOup0e8KECaFA8SbkrPLEG+6K/wqLA8rs8=";
   };
 
   sourceRoot = "${finalAttrs.src.name}/codex-rs";
 
-  cargoHash = "sha256-J4wvPn4lSTSsJrTG56vkhJe2F2b+fUvJLEd+qKQ9LUg=";
+  cargoHash = "sha256-zHNOUHUnyNxYSWn13H77ZdIuv09kHSlJfQBatTugLUA=";
+
+  depsExtraArgs = {
+    preBuild = ''
+      # crates.io now rejects the helper's default python-requests user agent.
+      mkdir -p .nix-cargo-vendor-bin
+      cp "$(command -v fetch-cargo-vendor-util)" .nix-cargo-vendor-bin/fetch-cargo-vendor-util
+      chmod +w .nix-cargo-vendor-bin/fetch-cargo-vendor-util
+      substituteInPlace .nix-cargo-vendor-bin/fetch-cargo-vendor-util \
+        --replace-fail 'session = requests.Session()' 'session = requests.Session(); session.headers.update({"User-Agent": "nixpkgs-fetch-cargo-vendor"})'
+      chmod +x .nix-cargo-vendor-bin/fetch-cargo-vendor-util
+      export PATH="$PWD/.nix-cargo-vendor-bin:$PATH"
+    '';
+  };
 
   # Match upstream's release build for the codex binary only.
   cargoBuildFlags = [ "--package" "codex-cli" ];
