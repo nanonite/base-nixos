@@ -49,7 +49,12 @@
       enable = true;           # run DMS as a systemd user service (generates config files before niri reads them)
       restartIfChanged = true;
     };
-    niri.enableKeybinds = true;
+    quickshell.package = inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.quickshell.override {
+      xorg = pkgs.xorg // {
+        libxcb = pkgs.libxcb;
+      };
+    };
+    niri.enableKeybinds = false;
   };
 
   # ── tmux ──────────────────────────────────────────────────────────────────
@@ -370,7 +375,7 @@
 
     # Nix helpers
     nixd # Nix language server (used by VS Code nix-ide extension above)
-    nixfmt-rfc-style # nix formatter
+    nixfmt # nix formatter
     nix-tree # visualise nix store dependencies
     nix-du # find what's eating disk space in /nix/store
     nvd # diff between NixOS generations (shows what changed)
