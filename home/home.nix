@@ -55,7 +55,7 @@
         libxcb = pkgs.libxcb;
       };
     };
-    niri.enableKeybinds = false;
+    niri.enableKeybinds = true;
   };
 
   # ── danksearch — indexed filesystem search ────────────────────────────────
