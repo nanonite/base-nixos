@@ -279,13 +279,12 @@
   '';
 
   # ── exomonad WASM plugins ─────────────────────────────────────────────────
-  # temporarily disabled — re-enable with pkgs.exomonad once crates.io 403 resolves
-  # home.activation.exomonadWasm = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-  #   mkdir -p "$HOME/.exo/wasm"
-  #   for f in ${pkgs.exomonad}/share/exomonad/wasm/*.wasm; do
-  #     ln -sf "$f" "$HOME/.exo/wasm/$(basename $f)"
-  #   done
-  # '';
+  home.activation.exomonadWasm = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.exo/wasm"
+    for f in ${pkgs.exomonad}/share/exomonad/wasm/*.wasm; do
+      ln -sf "$f" "$HOME/.exo/wasm/$(basename $f)"
+    done
+  '';
 
   # ── Global MCP servers for agent harnesses ────────────────────────────────
   # Registers tilth and context-mode for each coding harness. Store paths are

@@ -74,10 +74,10 @@
         pkgs.tilth
 
         # tracey — structured observability for agent runs
-        # pkgs.tracey
+        pkgs.tracey
 
         # kaish — constrained agent shell (agent-safe, structured I/O)
-        # pkgs.kaish
+        pkgs.kaish
 
         # context-mode — context window manager (per-agent + planner preambles)
         # NOTE: context-mode hooks conflict with exomonad hooks. Disable/unload
