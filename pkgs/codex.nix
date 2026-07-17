@@ -43,12 +43,18 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   depsExtraArgs = {
     preBuild = ''
-      # crates.io now rejects the helper's default python-requests user agent.
+      # Codex has a large lockfile; avoid crates.io API rate limiting while
+      # preserving nixpkgs' fetch-cargo-vendor build shape.
       mkdir -p .nix-cargo-vendor-bin
       cp "$(command -v fetch-cargo-vendor-util)" .nix-cargo-vendor-bin/fetch-cargo-vendor-util
       chmod +w .nix-cargo-vendor-bin/fetch-cargo-vendor-util
       substituteInPlace .nix-cargo-vendor-bin/fetch-cargo-vendor-util \
-        --replace-fail 'session = requests.Session()' 'session = requests.Session(); session.headers.update({"User-Agent": "nixpkgs-fetch-cargo-vendor"})'
+        --replace-fail 'total=5' 'total=20' \
+        --replace-fail 'backoff_factor=0.5' 'backoff_factor=2' \
+        --replace-fail 'status_forcelist=[500, 502, 503, 504]' 'status_forcelist=[429, 500, 502, 503, 504]' \
+        --replace-fail 'return f"https://crates.io/api/v1/crates/{pkg["name"]}/{pkg["version"]}/download"' 'return f"https://static.crates.io/crates/{pkg["name"]}/{pkg["name"]}-{pkg["version"]}.crate"' \
+        --replace-fail 'session = requests.Session()' 'session = requests.Session(); session.headers.update({"User-Agent": "nixpkgs-fetch-cargo-vendor"})' \
+        --replace-fail 'with mp.Pool(min(5, mp.cpu_count())) as pool:' 'with mp.Pool(1) as pool:'
       chmod +x .nix-cargo-vendor-bin/fetch-cargo-vendor-util
       export PATH="$PWD/.nix-cargo-vendor-bin:$PATH"
     '';
