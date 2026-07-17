@@ -28,18 +28,18 @@ rustPlatform.buildRustPackage (finalAttrs: {
   # Keep this pinned to the latest upstream Rust release tag after verifying it.
   # When updating, diff against nixpkgs' codex package and preserve its build
   # shape so we do not regress into a full-workspace, fat-LTO local build.
-  version = "0.136.0";
+  version = "0.144.5";
 
   src = fetchFromGitHub {
     owner = "openai";
     repo = "codex";
     tag = "rust-v${finalAttrs.version}";
-    hash = "sha256-MI9VrfMFuUOup0e8KECaFA8SbkrPLEG+6K/wqLA8rs8=";
+    hash = "sha256-v8MsNWeqiYsTvPtlXs8UMuZKLf7Cj71Vl+MHXihAkos=";
   };
 
   sourceRoot = "${finalAttrs.src.name}/codex-rs";
 
-  cargoHash = "sha256-zHNOUHUnyNxYSWn13H77ZdIuv09kHSlJfQBatTugLUA=";
+  cargoHash = "sha256-S4dsZXfmKvJItL2XYKyxfhqdCMATEG6oPjrtVRwkuYc=";
 
   depsExtraArgs = {
     preBuild = ''
@@ -67,8 +67,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # Upstream uses a heavier release profile than is practical for local Nix
     # builds of the CLI. Mirror nixpkgs here so rebuilds stay tractable.
     substituteInPlace Cargo.toml \
-      --replace-fail 'lto = "fat"' "" \
-      --replace-fail 'codegen-units = 1' ""
+      --replace-fail 'lto = "thin"' "" \
+      --replace-fail 'codegen-units = 4' ""
   '';
 
   nativeBuildInputs = [
