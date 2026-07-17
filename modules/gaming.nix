@@ -10,13 +10,12 @@
   };
 
   # ── Steam ──────────────────────────────────────────────────────────────────
-  # Unfree — install manually after adding nixpkgs.config.allowUnfree = true
-  # programs.steam = {
-  #   enable = true;
-  #   remotePlay.openFirewall      = true;
-  #   dedicatedServer.openFirewall = false;
-  #   extraCompatPackages = with pkgs; [ proton-ge-bin ];
-  # };
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall      = true;
+    dedicatedServer.openFirewall = false;
+    extraCompatPackages = with pkgs; [ proton-ge-bin ];
+  };
 
   # ── GameMode ───────────────────────────────────────────────────────────────
   # Lets games request a performance CPU governor, reduced background process
