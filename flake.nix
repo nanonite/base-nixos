@@ -48,7 +48,7 @@
 
     # opencode — AI coding agent (TypeScript, anomalyco)
     opencode = {
-      url = "github:anomalyco/opencode/v1.15.5";
+      url = "github:anomalyco/opencode/v1.18.3";
     };
 
     # sops-nix — encrypted secrets management
