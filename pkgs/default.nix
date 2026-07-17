@@ -53,4 +53,7 @@ final: prev: {
   # codex — local override to pin a newer release than the current nixpkgs input
   codex = final.callPackage ./codex.nix { };
 
+  # codex-fugu — Sakana Fugu profile launcher for the Codex CLI
+  codex-fugu = final.callPackage ./codex-fugu.nix { };
+
 }

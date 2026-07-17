@@ -67,6 +67,9 @@
     # VLC
     vlc
 
+    # Sakana Fugu profile launcher for Codex CLI
+    codex-fugu
+
     libreoffice
     udiskie
 

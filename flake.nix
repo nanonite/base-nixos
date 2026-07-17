@@ -188,6 +188,7 @@
           exomonadWasm
           docker-sbx
           codex
+          codex-fugu
           ;
         inherit (pkgs) context-mode;
         opencode = patchOpencode opencode.packages.${system}.opencode;

@@ -350,6 +350,37 @@
     mv "$CODEX_CONFIG.tmp" "$CODEX_CONFIG"
   '';
 
+  home.activation.codexFuguConfig = lib.hm.dag.entryAfter [ "codexMcpServers" ] ''
+    CODEX_HOME="$HOME/.codex"
+    CODEX_CONFIG="$CODEX_HOME/config.toml"
+    START_MARKER="# BEGIN NIX MANAGED SAKANA FUGU"
+    END_MARKER="# END NIX MANAGED SAKANA FUGU"
+
+    mkdir -p "$CODEX_HOME"
+    if [ ! -f "$CODEX_CONFIG" ]; then
+      touch "$CODEX_CONFIG"
+    fi
+
+    cp "${pkgs.codex-fugu}/share/codex-fugu/fugu.json" "$CODEX_HOME/fugu.json"
+    ${pkgs.gnused}/bin/sed "s|{{CODEX_HOME}}|$CODEX_HOME|g" \
+      "${pkgs.codex-fugu}/share/codex-fugu/fugu.config.toml" \
+      > "$CODEX_HOME/fugu.config.toml"
+
+    ${pkgs.gawk}/bin/awk -v start="$START_MARKER" -v end="$END_MARKER" '
+      $0 == start { skip = 1; next }
+      $0 == end { skip = 0; next }
+      skip != 1 { print }
+    ' "$CODEX_CONFIG" > "$CODEX_CONFIG.tmp"
+
+    {
+      printf '\n%s\n' "$START_MARKER"
+      cat "${pkgs.codex-fugu}/share/codex-fugu/model_providers.sakana.toml"
+      printf '%s\n' "$END_MARKER"
+    } >> "$CODEX_CONFIG.tmp"
+
+    mv "$CODEX_CONFIG.tmp" "$CODEX_CONFIG"
+  '';
+
   # ── User packages (installed via Home Manager, not system-wide) ───────────
 
   home.packages = with pkgs; [
