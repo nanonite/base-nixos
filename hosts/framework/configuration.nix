@@ -75,6 +75,8 @@
 
     # File manager
     nautilus
+
+    git-lfs
   ];
 
   # Polkit — required for apps like GParted, file managers to request sudo
