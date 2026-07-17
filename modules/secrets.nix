@@ -38,6 +38,10 @@
           owner = "framework";
           mode = "0400";
         };
+        sakana_api_key = {
+          owner = "framework";
+          mode = "0400";
+        };
       } // lib.optionalAttrs config.agentFramework.codexAuth.enable {
         codex_auth_json = {
           owner = "framework";
@@ -46,8 +50,8 @@
       };
     };
 
-    # Inject OPENROUTER_API_KEY into the systemd user session (used by sandbox
-    # configs in agent-sandbox/ and picked up by any terminal child process).
+    # Inject API keys into the systemd user session so GUI apps launched from
+    # niri and terminal child processes see the same agent credentials.
     systemd.user.services.sops-env = {
       description = "Import sops secrets into the systemd user environment";
       wantedBy = [ "default.target" ];
@@ -56,7 +60,8 @@
         RemainAfterExit = true;
         ExecStart = pkgs.writeShellScript "sops-env-import" ''
           ${pkgs.systemd}/bin/systemctl --user set-environment \
-            OPENROUTER_API_KEY=$(cat /run/secrets/openrouter_api_key)
+            OPENROUTER_API_KEY=$(cat /run/secrets/openrouter_api_key) \
+            SAKANA_API_KEY=$(cat /run/secrets/sakana_api_key)
         '';
       };
     };

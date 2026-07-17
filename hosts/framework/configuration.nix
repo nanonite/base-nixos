@@ -177,6 +177,7 @@
   # ── Docker / local Forgejo CI ─────────────────────────────────────────────
   virtualisation.docker.enable = true;
   agentFramework.forgejoCi.enable = true;
+  agentFramework.secrets.enable = true;
 
   # ── USB auto-mounting ─────────────────────────────────────────────────────
   services.udisks2.enable = true;
