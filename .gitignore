@@ -6,5 +6,19 @@ result-*
 PLAN.md
 plan.md
 updated_plan.md
-/etc/sops/age/keys.txt
+**/age/keys.txt
 .codex
+
+# Local credentials and unencrypted secret material
+.env
+.env.*
+!.env.example
+**/auth.json
+*.key
+*.pem
+*.p12
+*.pfx
+*.agekey
+*.secret
+secrets.plain.*
+secrets.decrypted.*

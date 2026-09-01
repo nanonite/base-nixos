@@ -174,12 +174,17 @@
     }
   ];
 
-  # ── Docker / local Forgejo CI ─────────────────────────────────────────────
-  virtualisation.docker.enable = true;
-  agentFramework.forgejoCi.enable = true;
-  agentFramework.secrets.enable = true;
+    # ── Docker / local Forgejo CI ─────────────────────────────────────────────
+    virtualisation.docker.enable = true;
+    agentFramework.forgejoCi.enable = true;
+    agentFramework.secrets.enable = true;
 
-  # ── USB auto-mounting ─────────────────────────────────────────────────────
+    # ── Windows VM host support ───────────────────────────────────────────────
+    # QEMU supplies UEFI firmware by default; Windows 10 does not require a vTPM.
+    programs.virt-manager.enable = true;
+    virtualisation.spiceUSBRedirection.enable = true;
+
+    # ── USB auto-mounting ─────────────────────────────────────────────────────
   services.udisks2.enable = true;
   systemd.user.services.udiskie = {
     description = "udiskie auto-mounter";

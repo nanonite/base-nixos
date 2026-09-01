@@ -406,6 +406,9 @@
     htop
     btop
     unzip
+    unar # RAR and other archive extraction
+    unrar # encrypted RAR5 archives
+    _7zz # current 7-Zip implementation with RAR5 support
 
     # Nix helpers
     nixd # Nix language server (used by VS Code nix-ide extension above)
