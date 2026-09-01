@@ -11,6 +11,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # qmd — on-device hybrid search for Markdown collections
+    qmd.url = "github:tobi/qmd";
+
     # niri Wayland tiling compositor — community flake with NixOS + HM modules
     niri = {
       url = "github:sodiboo/niri-flake";

@@ -11,15 +11,21 @@
     inputs.dms.homeModules.dank-material-shell
     inputs.dms.homeModules.niri
     inputs.dsearch.homeModules.default
+    inputs.qmd.homeModules.default
   ];
   home.username = "framework"; # change to your actual username
   home.homeDirectory = "/home/framework"; # change accordingly
+
+  home.sessionPath = [ "$HOME/.cargo/bin" ];
 
   # Match this to system.stateVersion in common.nix — do NOT change after first install
   home.stateVersion = "25.05";
 
   # Let Home Manager manage itself
   programs.home-manager.enable = true;
+
+  # qmd — on-device hybrid search for Markdown collections
+  programs.qmd.enable = true;
 
   # ── niri Wayland compositor config ────────────────────────────────────────
   # The niri HM module manages ~/.config/niri/config.kdl declaratively.
@@ -361,7 +367,7 @@
       touch "$CODEX_CONFIG"
     fi
 
-    cp "${pkgs.codex-fugu}/share/codex-fugu/fugu.json" "$CODEX_HOME/fugu.json"
+    install -m 644 "${pkgs.codex-fugu}/share/codex-fugu/fugu.json" "$CODEX_HOME/fugu.json"
     ${pkgs.gnused}/bin/sed "s|{{CODEX_HOME}}|$CODEX_HOME|g" \
       "${pkgs.codex-fugu}/share/codex-fugu/fugu.config.toml" \
       > "$CODEX_HOME/fugu.config.toml"

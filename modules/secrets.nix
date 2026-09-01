@@ -26,19 +26,13 @@
 
   config = lib.mkIf config.agentFramework.secrets.enable {
 
+    environment.systemPackages = [ pkgs.age pkgs.sops ];
+
     sops = {
       defaultSopsFile = ../secrets.yaml;
       age.keyFile = "/etc/sops/age/keys.txt";
       secrets = {
-        openrouter_api_key = {
-          owner = "framework";
-          mode = "0400";
-        };
         opencode_api_key = {
-          owner = "framework";
-          mode = "0400";
-        };
-        sakana_api_key = {
           owner = "framework";
           mode = "0400";
         };
@@ -47,22 +41,6 @@
           owner = "framework";
           mode = "0400";
         };
-      };
-    };
-
-    # Inject API keys into the systemd user session so GUI apps launched from
-    # niri and terminal child processes see the same agent credentials.
-    systemd.user.services.sops-env = {
-      description = "Import sops secrets into the systemd user environment";
-      wantedBy = [ "default.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = pkgs.writeShellScript "sops-env-import" ''
-          ${pkgs.systemd}/bin/systemctl --user set-environment \
-            OPENROUTER_API_KEY=$(cat /run/secrets/openrouter_api_key) \
-            SAKANA_API_KEY=$(cat /run/secrets/sakana_api_key)
-        '';
       };
     };
 
