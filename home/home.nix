@@ -17,6 +17,9 @@
   home.homeDirectory = "/home/framework"; # change accordingly
 
   home.sessionPath = [ "$HOME/.cargo/bin" ];
+  home.sessionVariables = {
+    SOPS_AGE_KEY_FILE = "/home/framework/.config/sops/age/keys.txt";
+  };
 
   # Match this to system.stateVersion in common.nix — do NOT change after first install
   home.stateVersion = "25.05";
@@ -189,9 +192,15 @@
   # ── Shell — bash with useful defaults ────────────────────────────────────
   # Swap for programs.zsh or programs.fish if you prefer
 
-  programs.bash = {
-    enable = true;
-    historyControl = [
+    programs.bash = {
+      enable = true;
+      initExtra = ''
+        export SOPS_AGE_KEY_FILE="/home/framework/.config/sops/age/keys.txt"
+        if [ -r /run/secrets/sakana_api_key ]; then
+          export SAKANA_API_KEY="$(< /run/secrets/sakana_api_key)"
+        fi
+      '';
+      historyControl = [
       "ignoredups"
       "ignorespace"
     ];

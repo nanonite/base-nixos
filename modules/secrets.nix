@@ -36,11 +36,32 @@
           owner = "framework";
           mode = "0400";
         };
+        sakana_api_key = {
+          owner = "framework";
+          mode = "0400";
+        };
       } // lib.optionalAttrs config.agentFramework.codexAuth.enable {
         codex_auth_json = {
           owner = "framework";
           mode = "0400";
         };
+      };
+    };
+
+    # Make the Sakana credential available to processes launched by the user
+    # session, including terminals opened outside a login shell.
+    systemd.user.services.sakana-env = {
+      description = "Expose Sakana API key to the user session";
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "set-sakana-api-key" ''
+          if [ ! -s /run/secrets/sakana_api_key ]; then
+            exit 1
+          fi
+          systemctl --user set-environment SAKANA_API_KEY="$(cat /run/secrets/sakana_api_key)"
+        '';
       };
     };
 

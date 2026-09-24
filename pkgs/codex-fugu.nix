@@ -8,13 +8,13 @@
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "codex-fugu";
-  version = "2026-07-16";
+  version = "2026-09-11";
 
   src = fetchFromGitHub {
     owner = "SakanaAI";
     repo = "fugu";
-    rev = "83f099cc678c3d9a88c1b1bcd085ed679ec3b89f";
-    hash = "sha256-eSwpQJih+dbAAPrXUwOn3bQq22bbV61X//zkZDjQHXI=";
+    rev = "0e04afcc10d8fb7f82cdbe903b83666dc0fe51ec";
+    hash = "sha256-pwjQeWVJq4TR2nExQGGUtYPbV0VXn7wwTMGJCdz7PXo=";
   };
 
   nativeBuildInputs = [ makeWrapper ];

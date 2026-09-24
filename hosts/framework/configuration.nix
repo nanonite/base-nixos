@@ -73,11 +73,14 @@
     libreoffice
     udiskie
 
-    # File manager
-    nautilus
+     # File manager
+     nautilus
 
-    git-lfs
-  ];
+     git-lfs
+
+     # VS Code inside the terminal
+     tode
+   ];
 
   # Polkit — required for apps like GParted, file managers to request sudo
   security.polkit.enable = true;

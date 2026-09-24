@@ -56,4 +56,7 @@ final: prev: {
   # codex-fugu — Sakana Fugu profile launcher for the Codex CLI
   codex-fugu = final.callPackage ./codex-fugu.nix { };
 
+  # terminal-code — VS Code inside the terminal
+  tode = final.callPackage ./tode.nix { };
+
 }
