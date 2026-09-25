@@ -51,7 +51,7 @@
 
     # opencode — AI coding agent (TypeScript, anomalyco)
     opencode = {
-      url = "github:anomalyco/opencode/v1.18.3";
+      url = "github:anomalyco/opencode/v2.0.16";
     };
 
     # sops-nix — encrypted secrets management
@@ -115,6 +115,9 @@
         pkg:
         pkg.overrideAttrs (old: {
           preBuild = stubPrettierPrior + relaxBunVersionCheck + (old.preBuild or "");
+          # v2 completion binary tries to chdir into packages/cli/completion which
+          # doesn't exist in the Nix sandbox; skip generation until upstream fixes it.
+          postInstall = "";
         });
 
       # Helper to build a NixOS system config — keeps outputs block clean.
@@ -190,9 +193,10 @@
           exomonad
           exomonadWasm
           docker-sbx
-          codex
-          codex-fugu
-          ;
+           codex
+           codex-fugu
+           tode
+           ;
         inherit (pkgs) context-mode;
         opencode = patchOpencode opencode.packages.${system}.opencode;
       };
