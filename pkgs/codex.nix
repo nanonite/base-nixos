@@ -14,7 +14,15 @@
   librusty_v8 ? callPackage ./nixpkgs-codex/librusty_v8.nix {
     inherit (callPackage ./nixpkgs-codex/fetchers.nix { }) fetchLibrustyV8;
   },
-  livekit-libwebrtc,
+  librusty_v8_src_binding ? (callPackage ./nixpkgs-codex/fetchers.nix { }).fetchLibrustyV8SrcBinding {
+    version = "150.4.0";
+    shas = {
+      x86_64-linux = "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp";
+      aarch64-linux = "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp";
+      riscv64-linux = "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp";
+      aarch64-darwin = "0krrb2vh4skvfmzwpcqkl55bg2gyn943drqa8snp16lwz06dynna";
+    };
+  },
   makeBinaryWrapper,
   nix-update-script,
   pkg-config,
@@ -28,18 +36,18 @@ rustPlatform.buildRustPackage (finalAttrs: {
   # Keep this pinned to the latest upstream Rust release tag after verifying it.
   # When updating, diff against nixpkgs' codex package and preserve its build
   # shape so we do not regress into a full-workspace, fat-LTO local build.
-  version = "0.144.5";
+  version = "0.156.1";
 
   src = fetchFromGitHub {
     owner = "openai";
     repo = "codex";
     tag = "rust-v${finalAttrs.version}";
-    hash = "sha256-v8MsNWeqiYsTvPtlXs8UMuZKLf7Cj71Vl+MHXihAkos=";
+    hash = "sha256-H53f57hmnyCtn5yPxtBe/A92qyQyzQBeU/vK2qSBrvI=";
   };
 
   sourceRoot = "${finalAttrs.src.name}/codex-rs";
 
-  cargoHash = "sha256-S4dsZXfmKvJItL2XYKyxfhqdCMATEG6oPjrtVRwkuYc=";
+  cargoHash = "sha256-W87rX/W2J1pwqNrihX+Rj6DfagoZYuB6C+l/S4BhyJM=";
 
   depsExtraArgs = {
     preBuild = ''
@@ -60,16 +68,21 @@ rustPlatform.buildRustPackage (finalAttrs: {
     '';
   };
 
-  # Match upstream's release build for the codex binary only.
-  cargoBuildFlags = [ "--package" "codex-cli" ];
-  cargoCheckFlags = [ "--package" "codex-cli" ];
+  # Build the CLI and its Code Mode companion runtime.
+  cargoBuildFlags = [
+    "--package"
+    "codex-cli"
+    "--package"
+    "codex-code-mode-host"
+  ];
+  cargoCheckFlags = [
+    "--package"
+    "codex-cli"
+    "--package"
+    "codex-code-mode-host"
+  ];
 
   postPatch = ''
-    # webrtc-sys asks rustc to link libwebrtc statically by default,
-    # but nixpkgs provides libwebrtc as a shared library.
-    substituteInPlace $cargoDepsCopy/*/webrtc-sys-*/build.rs \
-      --replace-fail "cargo:rustc-link-lib=static=webrtc" "cargo:rustc-link-lib=dylib=webrtc"
-
     # Upstream uses a heavier release profile than is practical for local Nix
     # builds of the CLI. Mirror nixpkgs here so rebuilds stay tractable.
     substituteInPlace Cargo.toml \
@@ -96,7 +109,6 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   env = {
     LIBCLANG_PATH = "${lib.getLib libclang}/lib";
-    LK_CUSTOM_WEBRTC = lib.getDev livekit-libwebrtc;
     NIX_CFLAGS_COMPILE = toString (
       lib.optionals stdenv.cc.isGNU [
         "-Wno-error=stringop-overflow"
@@ -106,6 +118,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
       ]
     );
     RUSTY_V8_ARCHIVE = librusty_v8;
+    RUSTY_V8_SRC_BINDING_PATH = librusty_v8_src_binding;
   };
 
   doCheck = false;
