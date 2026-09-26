@@ -51,7 +51,7 @@
 
     # opencode — AI coding agent (TypeScript, anomalyco)
     opencode = {
-      url = "github:anomalyco/opencode/v2.0.16";
+      url = "github:anomalyco/opencode/v2.0.18";
     };
 
     # sops-nix — encrypted secrets management
@@ -111,9 +111,16 @@
         substituteInPlace packages/script/src/index.ts \
           --replace-fail 'if (!semver.satisfies(process.versions.bun, expectedBunVersionRange)) {' 'if (false) {'
       '';
+      # Upstream ships nix/hashes.json for the v2.0.18 tag that doesn't match a
+      # build of that tag (hash was refreshed before the release version bump),
+      # so the node_modules fixed-output derivation fails its pinned hash.
+      # Fill in the hash this tree actually produces; drop once upstream fixes it.
+      opencodeNodeModulesHash = "sha256-9gJjhes2ueYckAgdeGlPwZcaIDdwB3ZnqK/XHHXhWNs=";
+
       patchOpencode =
         pkg:
         pkg.overrideAttrs (old: {
+          node_modules = old.node_modules.override { hash = opencodeNodeModulesHash; };
           preBuild = stubPrettierPrior + relaxBunVersionCheck + (old.preBuild or "");
           # v2 completion binary tries to chdir into packages/cli/completion which
           # doesn't exist in the Nix sandbox; skip generation until upstream fixes it.
