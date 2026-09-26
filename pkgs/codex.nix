@@ -36,18 +36,18 @@ rustPlatform.buildRustPackage (finalAttrs: {
   # Keep this pinned to the latest upstream Rust release tag after verifying it.
   # When updating, diff against nixpkgs' codex package and preserve its build
   # shape so we do not regress into a full-workspace, fat-LTO local build.
-  version = "0.156.1";
+  version = "0.157.1";
 
   src = fetchFromGitHub {
     owner = "openai";
     repo = "codex";
     tag = "rust-v${finalAttrs.version}";
-    hash = "sha256-H53f57hmnyCtn5yPxtBe/A92qyQyzQBeU/vK2qSBrvI=";
+    hash = "sha256-HuNL5VGd2LenhbCdcz0i8b6lRw3sicwXytyfXgCgy88=";
   };
 
   sourceRoot = "${finalAttrs.src.name}/codex-rs";
 
-  cargoHash = "sha256-W87rX/W2J1pwqNrihX+Rj6DfagoZYuB6C+l/S4BhyJM=";
+  cargoHash = "sha256-Mp4chq9QuQB19FrOZBhmUtPrDoEpZZna79+MZs9rGUo=";
 
   depsExtraArgs = {
     preBuild = ''
