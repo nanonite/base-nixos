@@ -50,8 +50,40 @@ final: prev: {
   # docker-sbx — Docker Sandboxes host CLI/runtime used by pwa-sandbox workflows
   docker-sbx = final.callPackage ./docker-sbx.nix { };
 
-  # codex — local override to pin a newer release than the current nixpkgs input
-  codex = final.callPackage ./codex.nix { };
+  # codex — local override to pin a newer release than the current nixpkgs input.
+  # The Rust build stays in ./codex.nix, kept close to nixpkgs' package shape.
+  # Upstream 0.157.x boots a shared background daemon on TUI launch that only
+  # works from a "complete local package" (codex-package.json + bin/codex +
+  # codex-path/ + codex-resources/), which a Nix store path is not, so plain
+  # `codex` aborts with "this CLI has no complete local package". The
+  # --no-daemon fallback therefore lives in this thin wrapper layer: anything
+  # inside buildRustPackage's phases re-runs the whole ~46 min codex-cli
+  # compile, while this layer rebuilds in seconds.
+  codex =
+    let
+      unwrapped = final.callPackage ./codex.nix { };
+    in
+    final.symlinkJoin {
+      name = "codex-${unwrapped.version}";
+      inherit (unwrapped) passthru;
+      meta = unwrapped.meta // {
+        mainProgram = "codex";
+      };
+      paths = [ unwrapped ];
+      postBuild = ''
+        rm "$out/bin/codex"
+        cat > "$out/bin/codex" <<'EOF'
+        #!${final.runtimeShell}
+        # Default to embedded mode; codex rejects a repeated --no-daemon, so
+        # only inject it when the caller has not already passed it.
+        case " $* " in
+          *" --no-daemon "*) exec ${unwrapped}/bin/codex "$@" ;;
+          *) exec ${unwrapped}/bin/codex --no-daemon "$@" ;;
+        esac
+        EOF
+        chmod +x "$out/bin/codex"
+      '';
+    };
 
   # codex-fugu — Sakana Fugu profile launcher for the Codex CLI
   codex-fugu = final.callPackage ./codex-fugu.nix { };
