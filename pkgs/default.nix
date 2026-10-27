@@ -85,6 +85,11 @@ final: prev: {
       '';
     };
 
+  # claude-code — local override pinning the official binary channel release
+  # (2.1.311); the locked nixpkgs input only has 2.1.112 (npm build).
+  # Update: refresh pkgs/claude-code/manifest.zst.json — see claude-code.nix.
+  claude-code = final.callPackage ./claude-code.nix { };
+
   # codex-fugu — Sakana Fugu profile launcher for the Codex CLI
   codex-fugu = final.callPackage ./codex-fugu.nix { };
 

@@ -35,10 +35,9 @@
   # DMS manages layout, colors, outputs via includes at runtime.
   #
   # KEYBINDINGS NOTE:
-  # DMS window management keybindings (focus, move, workspaces, terminal, etc.)
-  # are NOT set by enableKeybinds — that only covers DMS panel/launcher shortcuts.
-  # Niri bindings live in ~/.config/niri/dms/binds.kdl, written by DMS at runtime
-  # via: dms keybinds set niri "Mod+Key" "action" --desc "..."
+  # Niri bindings live in ~/.config/niri/dms/binds.kdl, written by DMS at runtime.
+  # Keep enableKeybinds disabled because the DMS includes below already load them.
+  # Edit bindings with: dms keybinds set niri "Mod+Key" "action" --desc "..."
   # Or via the GUI: Mod+Comma → Keyboard Shortcuts Editor
   #
   # We intentionally do NOT manage binds.kdl via home-manager because that would
@@ -64,7 +63,6 @@
         libxcb = pkgs.libxcb;
       };
     };
-    niri.enableKeybinds = true;
   };
 
   # ── danksearch — indexed filesystem search ────────────────────────────────

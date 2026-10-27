@@ -51,7 +51,7 @@
 
     # opencode — AI coding agent (TypeScript, anomalyco)
     opencode = {
-      url = "github:anomalyco/opencode/v2.0.18";
+      url = "github:anomalyco/opencode/v2.0.22";
     };
 
     # sops-nix — encrypted secrets management
@@ -111,11 +111,9 @@
         substituteInPlace packages/script/src/index.ts \
           --replace-fail 'if (!semver.satisfies(process.versions.bun, expectedBunVersionRange)) {' 'if (false) {'
       '';
-      # Upstream ships nix/hashes.json for the v2.0.18 tag that doesn't match a
-      # build of that tag (hash was refreshed before the release version bump),
-      # so the node_modules fixed-output derivation fails its pinned hash.
-      # Fill in the hash this tree actually produces; drop once upstream fixes it.
-      opencodeNodeModulesHash = "sha256-9gJjhes2ueYckAgdeGlPwZcaIDdwB3ZnqK/XHHXhWNs=";
+      # Pin the node_modules hash for this release. Refresh it when changing
+      # the OpenCode tag above.
+      opencodeNodeModulesHash = "sha256-g3k0cAFGqzmRYlcIkg1NDvlx1WxHYhnYPL0/a8E+qTg=";
 
       patchOpencode =
         pkg:
@@ -205,6 +203,7 @@
            tode
            ;
         inherit (pkgs) context-mode;
+        inherit (pkgs) claude-code;
         opencode = patchOpencode opencode.packages.${system}.opencode;
       };
 
