@@ -2,7 +2,6 @@
   lib,
   stdenv,
   callPackage,
-  rustPlatform,
   fetchFromGitHub,
   installShellFiles,
   bubblewrap,
@@ -11,16 +10,21 @@
   gitMinimal,
   libcap,
   libclang,
+  # codex 0.164+ requires rustc 1.99.x (upstream toolchain bump, #55677);
+  # this locked nixpkgs input ships rustc 1.94.0, so build against the
+  # rust-overlay stable toolchain instead (see flake.nix).
+  makeRustPlatform,
+  rust-bin,
   librusty_v8 ? callPackage ./nixpkgs-codex/librusty_v8.nix {
     inherit (callPackage ./nixpkgs-codex/fetchers.nix { }) fetchLibrustyV8;
   },
   librusty_v8_src_binding ? (callPackage ./nixpkgs-codex/fetchers.nix { }).fetchLibrustyV8SrcBinding {
-    version = "150.4.0";
+    version = "152.2.0";
     shas = {
-      x86_64-linux = "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp";
-      aarch64-linux = "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp";
-      riscv64-linux = "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp";
-      aarch64-darwin = "0krrb2vh4skvfmzwpcqkl55bg2gyn943drqa8snp16lwz06dynna";
+      x86_64-linux = "sha256-Pk1f7Nvg+YpgF+adfKglGad/sDLF615M2+zdPi7FGdU=";
+      aarch64-linux = "sha256-Pk1f7Nvg+YpgF+adfKglGad/sDLF615M2+zdPi7FGdU=";
+      riscv64-linux = "sha256-Pk1f7Nvg+YpgF+adfKglGad/sDLF615M2+zdPi7FGdU=";
+      aarch64-darwin = "sha256-udVlLrylFesr9MLuSmVRslZxF7Wqcg9DDSAyYW3X47U=";
     };
   },
   makeBinaryWrapper,
@@ -31,23 +35,32 @@
   versionCheckHook,
   installShellCompletions ? stdenv.buildPlatform.canExecute stdenv.hostPlatform,
 }:
+let
+  # Pin the toolchain codex 0.164 upstream builds with (see header comment).
+  # .minimal = rustc + cargo + rust-std, which is all buildRustPackage needs.
+  rustBin = rust-bin.stable."1.99.1".minimal;
+  rustPlatform = makeRustPlatform {
+    cargo = rustBin;
+    rustc = rustBin;
+  };
+in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "codex";
   # Keep this pinned to the latest upstream Rust release tag after verifying it.
   # When updating, diff against nixpkgs' codex package and preserve its build
   # shape so we do not regress into a full-workspace, fat-LTO local build.
-  version = "0.157.1";
+  version = "0.164.0";
 
   src = fetchFromGitHub {
     owner = "openai";
     repo = "codex";
     tag = "rust-v${finalAttrs.version}";
-    hash = "sha256-HuNL5VGd2LenhbCdcz0i8b6lRw3sicwXytyfXgCgy88=";
+    hash = "sha256-iib2+qQcGewC4Ga8cA80sInDJpzdSxDJP0y1DDOouI4=";
   };
 
   sourceRoot = "${finalAttrs.src.name}/codex-rs";
 
-  cargoHash = "sha256-Mp4chq9QuQB19FrOZBhmUtPrDoEpZZna79+MZs9rGUo=";
+  cargoHash = "sha256-0N2mEGqEl2ZjWqlbraVCWP0eoITgwmT9uO/1w/1eJno=";
 
   depsExtraArgs = {
     preBuild = ''
