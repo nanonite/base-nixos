@@ -80,6 +80,12 @@
 
      # VS Code inside the terminal
      tode
+
+     # ── Anki — spaced-repetition flashcards ───────────────────────────────
+     # anki-bin is the prebuilt upstream binary; plain `anki` is a full
+     # Qt/Python source build. Decks in ~/GitRepos/flashcards import via
+     # File → Import (the file chooser accepts multiple .apkg files at once).
+     anki-bin
    ];
 
   # Polkit — required for apps like GParted, file managers to request sudo
