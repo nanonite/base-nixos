@@ -55,6 +55,10 @@
         # Also satisfies context-mode's "install bun for faster JS/TS" tip.
         bun
 
+        # nodejs — Node.js LTS runtime + npm/npx. Needed by Wrangler and other
+        # Node-based MCP/dev tooling that doesn't run correctly under Bun.
+        nodejs
+
         # codex — OpenAI coding agent CLI
         codex
 
