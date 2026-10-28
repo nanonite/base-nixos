@@ -405,6 +405,7 @@
 
     # AI tooling
     claude-code
+    blaze # cargo build/test/run from a daemon that keeps the workspace compiled
 
     # Password manager
     bitwarden-desktop

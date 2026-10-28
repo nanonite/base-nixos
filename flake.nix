@@ -54,6 +54,10 @@
       url = "github:anomalyco/opencode/v2.0.22";
     };
 
+    # blaze — cargo build/test/run from a daemon that keeps your workspace
+    # compiled, with live edits (indexable-inc). Installed via home.nix.
+    blaze.url = "github:indexable-inc/blaze";
+
     # sops-nix — encrypted secrets management
     sops-nix = {
       url = "github:Mic92/sops-nix";
@@ -78,6 +82,7 @@
       rust-overlay,
       ghc-wasm-meta,
       opencode,
+      blaze,
       sops-nix,
       ...
     }@inputs:
@@ -152,6 +157,8 @@
 			opencode = patchOpencode opencode.packages.${system}.opencode;
 		    }
                   )
+                  # blaze — cargo build daemon (indexable-inc), from its own flake
+                  (_final:_prev: { blaze = blaze.packages.${system}.blaze; })
                 ];
               }
             )
