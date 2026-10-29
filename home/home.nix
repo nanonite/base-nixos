@@ -2,6 +2,7 @@
   inputs,
   pkgs,
   lib,
+  config,
   ...
 }:
 
@@ -35,15 +36,12 @@
   # DMS manages layout, colors, outputs via includes at runtime.
   #
   # KEYBINDINGS NOTE:
-  # Niri bindings live in ~/.config/niri/dms/binds.kdl, written by DMS at runtime.
-  # Keep enableKeybinds disabled because the DMS includes below already load them.
-  # Edit bindings with: dms keybinds set niri "Mod+Key" "action" --desc "..."
-  # Or via the GUI: Mod+Comma → Keyboard Shortcuts Editor
+  # The binds below are the source of truth and land in ~/.config/niri/hm.kdl.
+  # DMS's include is ordered hm.kdl *first*, so binds saved from the DMS GUI
+  # (~/.config/niri/dms/binds.kdl) still override these at runtime.
   #
-  # We intentionally do NOT manage binds.kdl via home-manager because that would
-  # make it a read-only symlink and break DMS's GUI editor.
-  # After configuring keybindings on a machine, back up the file:
-  #   cp ~/.config/niri/dms/binds.kdl ~/nix-workspace/hosts/framework/binds.kdl.bak
+  # Keep programs.dank-material-shell.niri.enableKeybinds disabled — it would
+  # add a second, overlapping set of Mod+… binds on top of these.
 
   # ── DankMaterialShell ─────────────────────────────────────────────────────
   programs.dank-material-shell = {
@@ -457,10 +455,58 @@
   # ── Screenshot desktop entry (shows in fuzzel app list) ──────────────────
 
 
-  # ── niri extra keybinds ────────────────────────────────────────────────────
-  programs.niri.settings.binds = {
-    "Print".action.spawn = [ "sh" "-c" "mkdir -p ~/ Pictures && grim -g \"$(slurp)\" ~/Pictures/$(date +%Y%m%d_%H%M%S).png" ];
-  };
+  # ── niri keybinds ──────────────────────────────────────────────────────────
+  # Mirrors hosts/framework/binds.kdl (kept as a plain-KDL reference copy).
+  # Declared here so they survive rebuilds: previously nothing bound Mod at all,
+  # so Super — and Super+Space — was forwarded to the focused app and did nothing.
+  programs.niri.settings.binds =
+    with config.lib.niri.actions;
+    {
+      # Workspaces
+      "Mod+1" = { action = focus-workspace 1; hotkey-overlay.title = "Workspace 1"; };
+      "Mod+2" = { action = focus-workspace 2; hotkey-overlay.title = "Workspace 2"; };
+      "Mod+3" = { action = focus-workspace 3; hotkey-overlay.title = "Workspace 3"; };
+      "Mod+Shift+1" = { action.move-window-to-workspace = 1; hotkey-overlay.title = "Move to workspace 1"; };
+      "Mod+Shift+2" = { action.move-window-to-workspace = 2; hotkey-overlay.title = "Move to workspace 2"; };
+      "Mod+Shift+3" = { action.move-window-to-workspace = 3; hotkey-overlay.title = "Move to workspace 3"; };
+
+      # Focus (vim-style + arrows)
+      "Mod+H" = { action = focus-column-or-monitor-left; hotkey-overlay.title = "Focus left"; };
+      "Mod+Left" = { action = focus-column-or-monitor-left; hotkey-overlay.title = "Focus left"; };
+      "Mod+L" = { action = focus-column-right; hotkey-overlay.title = "Focus right"; };
+      "Mod+Right" = { action = focus-column-or-monitor-right; hotkey-overlay.title = "Focus right"; };
+      "Mod+J" = { action = focus-window-down; hotkey-overlay.title = "Focus down"; };
+      "Mod+Down" = { action = focus-window-or-workspace-down; hotkey-overlay.title = "Focus down"; };
+      "Mod+K" = { action = focus-window-up; hotkey-overlay.title = "Focus up"; };
+      "Mod+Up" = { action = focus-window-or-workspace-up; hotkey-overlay.title = "Focus up"; };
+
+      # Move windows / columns
+      "Mod+Shift+H" = { action = move-column-left-or-to-monitor-left; hotkey-overlay.title = "Move column left"; };
+      "Mod+Shift+L" = { action = move-column-right-or-to-monitor-right; hotkey-overlay.title = "Move column right"; };
+      "Mod+Ctrl+Left" = { action = move-column-left-or-to-monitor-left; hotkey-overlay.title = "Move column left"; };
+      "Mod+Ctrl+Right" = { action = move-column-right-or-to-monitor-right; hotkey-overlay.title = "Move column right"; };
+      "Mod+Shift+J" = { action = move-window-down-or-to-workspace-down; hotkey-overlay.title = "Move window down"; };
+      "Mod+Ctrl+Down" = { action = move-window-down-or-to-workspace-down; hotkey-overlay.title = "Move window down"; };
+      "Mod+Shift+K" = { action = move-window-up-or-to-workspace-up; hotkey-overlay.title = "Move window up"; };
+      "Mod+Ctrl+Up" = { action = move-window-up-or-to-workspace-up; hotkey-overlay.title = "Move window up"; };
+
+      # Layout / window management
+      "Mod+BracketLeft" = { action = consume-window-into-column; hotkey-overlay.title = "Consume into column"; };
+      "Mod+BracketRight" = { action = expel-window-from-column; hotkey-overlay.title = "Expel from column"; };
+      "Mod+Ctrl+F" = { action = maximize-column; hotkey-overlay.title = "Maximize column"; };
+      "Mod+F" = { action = fullscreen-window; hotkey-overlay.title = "Fullscreen"; };
+      "Mod+Q" = { action = close-window; hotkey-overlay.title = "Close window"; };
+
+      # Launch
+      # Mod+Space is the DMS spotlight/launcher. Without a bind here, Super+Space
+      # is not intercepted by niri and silently reaches the focused window.
+      "Mod+Space" = { action = spawn "dms" "ipc" "spotlight" "toggle"; hotkey-overlay.title = "Application launcher"; };
+      "Mod+Return" = { action = spawn "kitty"; hotkey-overlay.title = "Terminal"; };
+      "Print" = {
+        action.spawn = [ "sh" "-c" "mkdir -p ~/Pictures && grim -g \"$(slurp)\" ~/Pictures/$(date +%Y%m%d_%H%M%S).png" ];
+        hotkey-overlay.title = "Screenshot region";
+      };
+    };
 
   # ── VSCode ────────────────────────────────────────────────────────────────
   programs.vscode = {
